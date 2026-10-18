@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <!--
+    web based qr code generator based on qrcode.js
+    -->
+<link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEREREREBERAREREBEQEAEBEREQARAQAQEREAAAEBERAREQAAAAAAABERAAABERERERERABEREREREREBEREREREREREREREREREREREAAAAREQAAAAEREBERAREQAQAQEREBABABABAREQEAEAEREBERAREQAAAAEREAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" rel="icon" type="image/x-icon">
+
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>  
+<a href = "index.html">HOME</a>
+<table>
+    <tr>
+        <td>ENTER URL:</td>
+        <td><input id = "urlinput"/></td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>SET WIDTH:</td>
+        <td><input id = "width-input"></td>
+        <td>PIXELS</td>
+    </tr>
+</table>
+<a id = "linklink"></a>
+<div id = "qrcode"></div>
+<a href="#" id="download-button">Download QR Code</a>
+
+<script>
+
+codesquaresize = 512; 
+marginsize = 40; 
+fontsize = 12; 
+globalurl = window.location.href.split("qrcode.html")[0]; 
+
+document.getElementById("urlinput").value = ""; 
+document.getElementById("urlinput").select(); 
+
+document.getElementById("urlinput").onchange = function(){ 
+    globalurl = this.value; 
+    qrcode.makeCode(globalurl); 
+    document.getElementById("linklink").href = globalurl; 
+    document.getElementById("linklink").innerHTML = globalurl; 
+} 
+
+document.getElementById("linklink").href = globalurl; 
+document.getElementById("linklink").innerHTML = globalurl; 
+document.getElementById("urlinput").value = globalurl; 
+
+var qrContainer = document.getElementById("qrcode");
+qrcode = new QRCode(qrContainer, { 
+    text: globalurl, 
+    width: codesquaresize, 
+    height: codesquaresize, 
+    colorDark : "#000000", 
+    colorLight : "#ffffff", 
+    correctLevel : QRCode.CorrectLevel.H 
+}); 
+
+document.getElementById("width-input").value = codesquaresize.toString(); 
+
+document.getElementById("width-input").onchange = function(){ 
+    codesquaresize = parseInt(this.value); 
+    qrcode._htOption.width = codesquaresize; 
+    qrcode._htOption.height = codesquaresize; 
+    qrContainer.innerHTML = ""; 
+    qrcode = new QRCode(qrContainer, { 
+        text: globalurl, 
+        width: codesquaresize, 
+        height: codesquaresize, 
+        colorDark : "#000000", 
+        colorLight : "#ffffff", 
+        correctLevel : QRCode.CorrectLevel.H 
+    });
+}
+
+document.getElementById("download-button").onclick = function(event){
+    event.preventDefault();
+    var qrImage = document.querySelector("#qrcode img");
+    if (qrImage && qrImage.src) {
+        var downloadLink = document.createElement("a");
+        downloadLink.href = qrImage.src;
+        downloadLink.download = "qrcode.png";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+}
+
+
+</script>
+<style>
+input{
+    border:solid;
+    font-family:courier;
+}
+body{
+    font-family:Arial;
+}
+canvas,img{
+    border-width:4px;
+    margin:1em 1em 1em 1em;
+}
+a{
+    color:black;
+    font-size:2em;
+}
+.button{
+    cursor:pointer;
+    text-align:center;
+    border:solid;
+    border-radius:3px;
+}
+.button:hover{
+    background-color:green;
+}
+.button:active{
+    background-color:yellow;
+}
+</style>
+</body>
+</html>

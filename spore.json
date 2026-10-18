@@ -1,0 +1,17 @@
+{
+    "json":"https://raw.githubusercontent.com/lafelabs/hypercube.json/refs/heads/main/spore.json",
+    "php":"https://raw.githubusercontent.com/lafelabs/hypercube.json/refs/heads/main/spore.php",
+    "files":[
+        "qrcode.html",
+        "hypercube.json",
+        "README.md",
+        "index.html",
+        "editor.html",
+        "php.js",
+        "spore.json",
+        "spore.php",
+        "load-file.php",
+        "save-file.php",
+        "list-files.php"
+    ]
+}
