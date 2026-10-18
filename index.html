@@ -62,6 +62,13 @@ load_file(currentFile).then(
     }
 );
 
+
+load_file("hypercube.json").then(
+    hypercube_raw => {
+        hypercube = JSON.parse(hypercube_raw);
+    }
+);
+
 editor.on("change", function(){
     var currentContent = editor.getValue();
     
