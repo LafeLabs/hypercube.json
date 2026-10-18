@@ -4,6 +4,7 @@
     "files":[
         "qrcode.html",
         "hypercube.json",
+        "geometron.js",
         "README.md",
         "index.html",
         "editor.html",
