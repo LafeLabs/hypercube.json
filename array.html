@@ -8,57 +8,24 @@
 <title>array.json</title>
 </head>
 <body>
-
-    <h1>keyboard 040-0176</h1>
-<textarea id ="keyboard"></textarea>
-
-    <h1>shape table 0200 - 0277</h1>
-<textarea id ="shapes"></textarea>
-    <h1>robot shape table 0500 - 0577</h1>
-<textarea id ="robotshapes"></textarea>
-
-    <h1>vr shape table 0600 - 0677</h1>
-<textarea id ="shapes3d"></textarea>
-
-    <h1>ZERO PAGE SYMBOLS 01000-01037</h1>
-<textarea id ="symbols-zero-page"></textarea>
-
-    <h1>FONT 01040-01176</h1>
-<textarea id ="font"></textarea>
-
-    <h1>SHAPE TABLE SYMBOLS 01200-01277</h1>
-<textarea id ="symbols-shapes"></textarea>
-
-    <h1>CANVAS ACTION SYMBOLS 01300-01377</h1>
-<textarea id ="symbols-canvas-actions"></textarea>
-
-    <h1>ROBOT ACTION SYMBOLS 01400-01477</h1>
-<textarea id ="symbols-robot-actions"></textarea>
-
-    <h1>ROBOT SHAPE SYMBOLS 01500-01577</h1>
-<textarea id ="symbols-robot-shapes"></textarea>
-
-    <h1>VR SHAPE SYMBOLS 01600-01677</h1>
-<textarea id ="symbols-vr-shapes"></textarea>
-
-    <h1>VR ACTION SYMBOLS 01700-01777</h1>
-<textarea id ="symbols-vr-actions"></textarea>
+<h1>bytecode</h1>
+<textarea id ="bytecode"></textarea>
 
 <script>
 
 load_file("array.json").then(
     filedata => {
         array = JSON.parse(filedata);
-        keyboard = [];
+        bytecode = {};
+        bytecode.keyboard = [];
         for(let index = 0o40;index <= 0o176;index++){
             let newkey = {};
             newkey.action = "0" + array[index][0].toString(8);
             newkey.key = "0" + index.toString(8);
-            keyboard.push(newkey);
+            bytecode.keyboard.push(newkey);
         }
-        document.getElementById("keyboard").value = JSON.stringify(keyboard,null,2);
         
-        shapes = [];
+        bytecode.shapes = [];
         for(let index = 0o200;index <= 0o277;index++){
             if(array[index].length > 0){
                 let newshape = "0" + index.toString(8) + ":";
@@ -67,12 +34,11 @@ load_file("array.json").then(
                     
                 }
                 newshape = newshape.replace(/,$/, ""); 
-                shapes.push(newshape);
+                bytecode.shapes.push(newshape);
             }
         }
-        document.getElementById("shapes").value = JSON.stringify(shapes,null,2);        
 
-        robotshapes = [];
+        bytecode.robotshapes = [];
         for(let index = 0o500;index <= 0o577;index++){
             if(array[index].length > 0){
                 let newshape = "0" + index.toString(8) + ":";
@@ -81,12 +47,12 @@ load_file("array.json").then(
                     
                 }
                 newshape = newshape.replace(/,$/, ""); 
-                robotshapes.push(newshape);
+                bytecode.robotshapes.push(newshape);
             }
         }
-        document.getElementById("robotshapes").value = JSON.stringify(robotshapes,null,2);    
 
-        shapes3d = [];
+
+        bytecode.shapes3d = [];
         for(let index = 0o600;index <= 0o677;index++){
             if(array[index].length > 0){
                 let newshape = "0" + index.toString(8) + ":";
@@ -95,12 +61,11 @@ load_file("array.json").then(
                     
                 }
                 newshape = newshape.replace(/,$/, ""); 
-                shapes3d.push(newshape);
+                bytecode.shapes3d.push(newshape);
             }
         }
-        document.getElementById("shapes3d").value = JSON.stringify(shapes3d,null,2);            
-        
-        zeropage = [];
+
+        bytecode.zeropage_symbols = [];
         for(let index = 0o1000;index <= 0o1037;index++){
             if(array[index].length > 0){
                 let newshape = "0" + index.toString(8) + ":";
@@ -109,12 +74,11 @@ load_file("array.json").then(
                     
                 }
                 newshape = newshape.replace(/,$/, ""); 
-                zeropage.push(newshape);
+                bytecode.zeropage_symbols.push(newshape);
             }
         }
-        document.getElementById("symbols-zero-page").value = JSON.stringify(zeropage,null,2);
-        
-        font = [];
+
+        bytecode.font = [];
         for(let index = 0o1040;index <= 0o1176;index++){
             if(array[index].length > 0){
                 let newshape = "0" + index.toString(8) + ":";
@@ -123,11 +87,89 @@ load_file("array.json").then(
                     
                 }
                 newshape = newshape.replace(/,$/, ""); 
-                font.push(newshape);
+                bytecode.font.push(newshape);
             }
         }
-        document.getElementById("font").value = JSON.stringify(font,null,2);        
+
+        bytecode.shape_symbols = [];
+        for(let index = 0o1200;index <= 0o1277;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.shape_symbols.push(newshape);
+            }
+        }        
         
+        bytecode.canvas_action_symbols = [];
+        for(let index = 0o1300;index <= 0o1377;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.canvas_action_symbols.push(newshape);
+            }
+        }
+        
+        bytecode.robot_action_symbols = [];
+        for(let index = 0o1400;index <= 0o1477;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.robot_action_symbols.push(newshape);
+            }
+        }        
+
+        bytecode.robot_shapes_symbols = [];
+        for(let index = 0o1500;index <= 0o1577;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.robot_shapes_symbols.push(newshape);
+            }
+        }        
+
+        bytecode.vr_shapes_symbols = [];
+        for(let index = 0o1600;index <= 0o1677;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.vr_shapes_symbols.push(newshape);
+            }
+        }        
+        
+        bytecode.vr_action_symbols = [];
+        for(let index = 0o1700;index <= 0o1777;index++){
+            if(array[index].length > 0){
+                let newshape = "0" + index.toString(8) + ":";
+                for(let glyphIndex = 0;glyphIndex< array[index].length;glyphIndex++){
+                    newshape += "0" + array[index][glyphIndex].toString(8) + ",";
+                    
+                }
+                newshape = newshape.replace(/,$/, ""); 
+                bytecode.vr_action_symbols.push(newshape);
+            }
+        }        
+        
+        document.getElementById("bytecode").value = JSON.stringify(bytecode,null,2);    
     }
 );
 

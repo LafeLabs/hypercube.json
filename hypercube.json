@@ -6,6 +6,10 @@
             "files":[
                 "qrcode.html",
                 "hypercube.json",
+                "geometron.js",
+                "geometron.html",
+                "geometron.css",
+                "sketch.js",
                 "README.md",
                 "index.html",
                 "editor.html",
@@ -59,6 +63,15 @@
                     "BUILD THE DIRT SWARM TO GROW AND BECOME A GLOBAL NETWORK WHICH CAN BRING FULL TRASH MAGIC INTO EXISTENCE",
                     "BUILD ROBOTS FROM TRASH WHICH BUILD ROBOTS FROM TRASH",
                     "BUILD A WEB SERVER DISTRIBUTION NODE AT A COFFEE SHOP OR LIBRARY OR BOOK STORE OR ART GALLERY OR SCHOOL OR HACKER SPACE OR MAKER SPACE OR PARKING LOT OR PARK"
+                ],
+                "stack":[
+                    "html",
+                    "css",
+                    "javascript",
+                    "php",
+                    "json",
+                    "markdown",
+                    "python"
                 ]
             }
         ],
