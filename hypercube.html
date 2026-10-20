@@ -5,11 +5,16 @@
     <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
     
 <script src="php.js"></script>
+<script src="geometron.js"></script>
 <title>hypercube.json</title>
 </head>
 <body>
 <h1>hypercube</h1>
 <textarea id ="textio"></textarea>
+    <canvas id = "geometron-spell-canvas"></canvas>
+    <canvas id = "geometron-glyph-canvas"></canvas>
+    <input id = "geometron-glyph-input">
+
 
 <script>
 
@@ -17,6 +22,28 @@ load_file("hypercube.json").then(
     filedata => {
         hypercube = JSON.parse(filedata);
         document.getElementById("textio").value = JSON.stringify(hypercube,null,2);    
+        
+        bytecode = [];
+    
+        for(let index = 0;index < hypercube.bytecode.keyboard.length;index++){
+            bytecode.push(hypercube.bytecode.keyboard[index].key + ":" + hypercube.bytecode.keyboard[index].action);    
+        }
+        
+        bytecode = bytecode.concat(hypercube.bytecode.shapes);
+        bytecode = bytecode.concat(hypercube.bytecode.robotshapes);
+        bytecode = bytecode.concat(hypercube.bytecode.shapes3d);
+        bytecode = bytecode.concat(hypercube.bytecode.zeropage_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.font);
+        bytecode = bytecode.concat(hypercube.bytecode.shape_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.canvas_action_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.robot_action_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.robot_shapes_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.vr_shapes_symbols);
+        bytecode = bytecode.concat(hypercube.bytecode.vr_action_symbols);
+        hypercube.bytecode = bytecode;
+        data = encodeURIComponent(JSON.stringify(hypercube,null,"    "));
+        save_file("hypercube2.json",data);
+        
     }
 );
 

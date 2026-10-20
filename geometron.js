@@ -634,6 +634,10 @@ function geometronAction(ctx, gvm,action){
 }
 
 
+function loadByteCode(gvm,byteCodeArray){
+    
+}
+
 function convertOldFormat(oldFormat){
     let inputArray = oldFormat.split(",");//take in string in old format
     let outputArray = [];
