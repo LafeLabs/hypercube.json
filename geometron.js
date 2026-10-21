@@ -427,10 +427,10 @@ function geometronAction(ctx, gvm,action){
             gvm.cursor.y += gvm.cursor.r*Math.sin(gvm.cursor.theta + gvm.cursor.thetaStep);    
             break;
         case 0o334:
-            gvm.cursor.theta -= gvm.cursor.thetaStep; // CCW
+            gvm.cursor.theta -= gvm.cursor.thetaStep;
             break;
         case 0o335:
-            gvm.cursor.theta += gvm.cursor.thetaStep; // CCW
+            gvm.cursor.theta += gvm.cursor.thetaStep;
             break;
         case 0o336:
             gvm.cursor.r /= gvm.cursor.scaleFactor; // -
@@ -525,16 +525,16 @@ function geometronAction(ctx, gvm,action){
             gvm.svgString += "fill = \"" + ctx.fillStyle + "\" />\n";
             break;
         case 0o350:
-            gvm.cursor.thetaStep /= 2;  //angle/2
+            gvm.cursor.thetaStep /= 2;
             break;
         case 0o351:
-            gvm.cursor.thetaStep *= 2;  //angle/2
+            gvm.cursor.thetaStep *= 2;
             break;
         case 0o352:
-            gvm.cursor.thetaStep /= 3;  //angle/2
+            gvm.cursor.thetaStep /= 3;
             break;
         case 0o353:
-            gvm.cursor.thetaStep *= 3;  //angle/2
+            gvm.cursor.thetaStep *= 3;
             break;
         case 0o354:
             //end a closed but not filled path
