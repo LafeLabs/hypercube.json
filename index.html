@@ -1,220 +1,37 @@
  <!doctype html>
 <html>
 <head>
-<!--Stop Google:-->
-<META NAME="robots" CONTENT="noindex,nofollow">
+
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
     
-<link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAADw8OAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAABAAEAAAAQAAEAERAAABARAQEREQAAEBEBAAEAAAAREREAAQAAABEAEQABAAAAEQARAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA3u8AAN7HAADSgwAA0u8AAMDvAADM7wAAzO8AAP//AAD//wAA//8AAP//AAD//wAA" rel="icon" type="image/x-icon">
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/idea.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/vibrant-ink.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-
-
-
-    <script src = "https://cdnjs.cloudflare.com/ajax/libs/showdown/1.8.6/showdown.js"></script>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-        <script>
-            MathJax.Hub.Config({
-                tex2jax: {
-                inlineMath: [['$','$'], ['\\(','\\)']],
-                processEscapes: true,
-                processClass: "mathjax",
-                ignoreClass: "no-mathjax"
-                }
-            });//			MathJax.Hub.Typeset();//tell Mathjax to update the math
-        </script>
-        <script src ="php.js"></script>
-<title>README.md EDITOR</title>
+<script src="php.js"></script>
+<title>geometron hypercube</title>
 </head>
 <body>
-<h1>README.md</h1>
-<div id = "lightdarkbutton" class = "button">--> DARK MODE <--</div>
-<div class = "no-mathjax" id = "maineditor" contenteditable="true" spellcheck="false"></div>
-<div class = "mathjax" id = "displayscroll"></div>
-
+<textarea id = "textio"></textarea>
 <script>
 
-editor = CodeMirror(document.getElementById("maineditor"), {
-    mode: "text/x-markdown",
-    theme: "idea",            // Must match the idea.min.css theme file you linked
-    lineNumbers: true,
-    lineWrapping: true
-});
-
-var converter = new showdown.Converter();
-converter.setOption('literalMidWordUnderscores', true);
-converter.setOption('tables', true);
-    
-currentFile = "README.md";
-
-load_file(currentFile).then(
-    readme => {
-        rawhtml = converter.makeHtml(readme);
-        document.getElementById("displayscroll").innerHTML = rawhtml;
-        MathJax.Hub.Typeset();
-        editor.setValue(readme);
-    }
-);
-
+hypercube = [];
+for(let index = 0;index < 1024;index++){
+    hypercube.push([]);
+}
 
 load_file("hypercube.json").then(
-    hypercube_raw => {
-        hypercube = JSON.parse(hypercube_raw);
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        document.getElementById("textio").value = JSON.stringify(hypercube,null,2)
     }
 );
 
-editor.on("change", function(){
-    var currentContent = editor.getValue();
-    
-    rawhtml = converter.makeHtml(currentContent);
-    document.getElementById("displayscroll").innerHTML = rawhtml;
-    
-    MathJax.Hub.Typeset();
 
-    data = encodeURIComponent(currentContent);
-    save_file(currentFile, data);
-});
-
-
-
-lightmode = true;
-document.getElementById("lightdarkbutton").style.color = "black";
-document.getElementById("lightdarkbutton").style.borderColor = "black";
-
-document.getElementById("displayscroll").style.backgroundColor = "white";
-document.getElementById("displayscroll").style.color = "black";        
-document.getElementById("lightdarkbutton").innerHTML = "DARK MODE";
-editor.setOption("theme", "idea");
-
-var links = document.getElementById("displayscroll").getElementsByTagName("a");
-for(var index = 0;index < links.length;index++){
-    links[index].style.color = "blue";
-}
-
-lightmode = true;
-document.getElementById("lightdarkbutton").style.color = "black";
-document.getElementById("lightdarkbutton").style.borderColor = "black";
-
-document.getElementById("displayscroll").style.backgroundColor = "white";
-document.getElementById("displayscroll").style.color = "black";        
-document.getElementById("lightdarkbutton").innerHTML = "DARK MODE";
-editor.setOption("theme", "idea");
-var links = document.getElementById("displayscroll").getElementsByTagName("a");
-for(var index = 0;index < links.length;index++){
-    links[index].style.color = "blue";
-}
-
-document.getElementById("lightdarkbutton").onclick = function(){
-    lightmode = !lightmode;
-    if(lightmode){
-        document.getElementById("lightdarkbutton").style.color = "black";
-        document.getElementById("lightdarkbutton").style.borderColor = "black";
-        document.getElementById("lightdarkbutton").style.backgroundColor = "white";
-        document.getElementById("displayscroll").style.backgroundColor = "white";
-        document.getElementById("displayscroll").style.color = "black";        
-        document.getElementById("lightdarkbutton").innerHTML = "DARK MODE";
-        editor.setOption("theme", "idea");
-        var links = document.getElementById("displayscroll").getElementsByTagName("a");
-        for(var index = 0;index < links.length;index++){
-            links[index].style.color = "blue";
-        }
-    }
-    else{
-        document.getElementById("lightdarkbutton").style.color = "white";
-        document.getElementById("lightdarkbutton").style.borderColor = "white";
-        document.getElementById("lightdarkbutton").style.backgroundColor = "#101010";
-        document.getElementById("displayscroll").style.backgroundColor = "#101010";        
-        document.getElementById("displayscroll").style.color = "white";        
-        document.getElementById("lightdarkbutton").innerHTML = "LIGHT MODE";        
-        editor.setOption("theme", "vibrant-ink");
-
-        var links = document.getElementById("displayscroll").getElementsByTagName("a");
-        for(var index = 0;index < links.length;index++){
-            links[index].style.color = "#ff2cb4";
-        }        
-    }
-}
 
 </script>
 <style>
-body{
-    overflow:hidden;
-    font-family:Arial;
-    background-color:#808080;
-}
-a{
-    color:blue;
-}
-input{
-    font-family:courier;
-    color:white;
-}
-h1{
-    text-align:center;
-}
-#displayscroll li p {
-    margin: 0 !important;
-    padding: 0 !important;
-    display: inline !important;
-}
 
-.CodeMirror { height: 100%; }
-#maineditor{
-    position:absolute;  
-    left:1em;
-    top:5em;
-    right:50%;
-    bottom:1em;
-    font-size:1em;
-    border:solid;
-}
-#displayscroll{
-    position:absolute;
-    left:55%;
-    right:1em;
-    bottom:1em;
-    top:5em;
-    border:solid;
-    border-width:3px;
-    overflow:scroll;
-    padding: 1em 1em 1em 1em;
-    background-color:white;
-}
-#displayscroll img{
-    max-width:70%;
-    display:block;
-    margin:auto;
-}
-.button{
-    cursor:pointer;
-    background-color:white;
-    
-}
-.button:hover{
-    background-color:green;
-}
-.button:active{
-    background-color:yellow;
-}
-#lightdarkbutton{
-    position:absolute;
-    right:10px;
-    top:10px;
-    width:10em;
-    text-align:center;
-    border:solid;
-    border-radius:3px;
-    font-size:2em;
-    color:black;
-}
 
 </style>
-
 </body>
 </html>

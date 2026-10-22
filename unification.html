@@ -40,6 +40,24 @@ load_file("rootmagic.json").then(
                 for(let index = 0o300;index < 0o377;index++){
                     hypercube[index] = hypercube2[index];
                 }
+                
+                load_file("ontology.json").then(
+                    filedata => {
+                        ontology = JSON.parse(filedata);
+                        bytecode = ontology.bytecode;
+                        for(let index = 0;index < bytecode.length;index++){
+                            let address = parseInt(bytecode[index].split(":")[0],8);
+                            let bytestrings = bytecode[index].split(":")[1].split(",");
+                            array = [];
+                            for(let byteindex = 0;byteindex < bytestrings.length;byteindex++){
+                                array.push(parseInt(bytestrings[byteindex],8));
+                            }
+                            hypercube[address] = array;
+                            //save_file("hypercube.json",JSON.stringify(hypercube,null,2));
+                            
+                        }
+                    }
+                );
             }
         );
     }
