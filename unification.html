@@ -1,0 +1,68 @@
+ <!doctype html>
+<html>
+<head>
+
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
+    
+<!--
+ace.js project home:
+https://ace.c9.io/
+
+list of languages:
+https://cloud9-sdk.readme.io/docs/language-mode
+ace.js is BSD license
+
+-->    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
+
+<script src="php.js"></script>
+<title>unification</title>
+</head>
+<body>
+
+<textarea id ="textio"></textarea>
+
+<script>
+
+hypercube = [];
+for(let index = 0;index < 1024;index++){
+    hypercube.push([]);
+}
+
+
+load_file("rootmagic.json").then(
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        load_file("canvas.json").then(
+            filedata => {
+                hypercube2 = JSON.parse(filedata);
+                for(let index = 0o300;index < 0o377;index++){
+                    hypercube[index] = hypercube2[index];
+                }
+            }
+        );
+    }
+);
+
+
+//save_file("rootmagic.json",JSON.stringify(hypercube,null,2));
+    
+
+</script>
+<style>
+#textio{
+    position:absolute;
+    right:1em;
+    width:30%;
+    bottom:1em;
+    height:50%;
+    font-family:courier;
+    color:#00ff00;
+    background-color:black;
+}
+
+
+</style>
+</body>
+</html>

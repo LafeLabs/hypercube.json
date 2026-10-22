@@ -1,0 +1,172 @@
+ <!doctype html>
+<html>
+<head>
+
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
+    
+<!--
+ace.js project home:
+https://ace.c9.io/
+
+list of languages:
+https://cloud9-sdk.readme.io/docs/language-mode
+ace.js is BSD license
+
+-->    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
+
+<script src="php.js"></script>
+<title>ROOT MAGIC editor</title>
+</head>
+<body>
+<table>
+    <tr>
+        <td>0</td>
+        <td>
+            <select name="eights">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+            </select>
+        </td>
+        <td>
+            <select name="ones">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+    </tr>
+</table>    
+        
+<div id="maineditor" contenteditable="true" spellcheck="false"></div>
+
+
+<textarea id ="bytecode"></textarea>
+
+<script>
+address = 0o10;
+
+hypercube = [];
+for(let index = 0;index < 1024;index++){
+    hypercube.push([]);
+}
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  const eightsSelect = document.querySelector('select[name="eights"]');
+  const onesSelect = document.querySelector('select[name="ones"]');
+
+  eightsSelect.value = "1";
+  onesSelect.value = "0";
+
+  function handleChange() {
+    const eights = parseInt(eightsSelect.value);
+    const ones = parseInt(onesSelect.value);
+    
+    address = (8 * eights) + ones;
+        array = hypercube[address];
+        code = "";
+        for(let index = 0;index < array.length; index++){
+            code += String.fromCharCode(array[index] - 512);
+        }
+        editor.setValue(code);
+    
+    console.log(`Address updated to octal: 0o${address.toString(8)}`);
+  }
+
+  eightsSelect.addEventListener('change', handleChange);
+  onesSelect.addEventListener('change', handleChange);
+});
+
+
+
+editor = ace.edit("maineditor");
+editor.setTheme("ace/theme/github");
+//editor.setTheme("ace/theme/vibrant_ink");
+editor.getSession().setMode("ace/mode/javascript");
+editor.getSession().setUseWrapMode(true);
+editor.$blockScrolling = Infinity;
+editor.setTheme("ace/theme/vibrant_ink");
+editor.setOption("useWorker", false);
+
+load_file("rootmagic.json").then(
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        array = hypercube[address];
+        code = "";
+        for(let index = 0;index < array.length; index++){
+            code += String.fromCharCode(array[index] - 512);
+        }
+        editor.setValue(code);
+    }
+);
+
+
+document.getElementById("bytecode").value = "";
+document.getElementById("maineditor").onkeyup = function(){
+    data = editor.getSession().getValue();
+    bytecode = "0" + address.toString(8) + ":";
+    array = [];
+    for(let index = 0;index < data.length;index++){
+        action = data.charCodeAt(index);
+        
+        symbol = action + 512;
+        array.push(symbol);
+        bytecode +=  "0" + symbol.toString(8) + ",";
+    }
+    bytecode = bytecode.replace(/,$/, '');
+    document.getElementById("bytecode").value = bytecode;
+    hypercube[address] = array;
+    save_file("rootmagic.json",JSON.stringify(hypercube,null,2));
+    
+}
+
+
+document.body.style.backgroundColor = "#ff0000af";
+document.body.style.color = "white";
+editor.setTheme("ace/theme/vibrant_ink");
+
+
+</script>
+<style>
+#bytecode{
+    position:absolute;
+    right:1em;
+    width:30%;
+    bottom:1em;
+    height:50%;
+    font-family:courier;
+    color:#00ff00;
+    background-color:black;
+}
+#maineditor{
+    position:absolute;  
+    left:0%;
+    top:150px;
+    bottom:1em;
+    right:50%;
+    font-size:22px;
+    border:solid;
+    border-color:black;
+}
+
+.button{
+    cursor:pointer;
+}
+.button:hover{
+    background-color:green;
+}
+.button:active{
+    background-color:yellow;
+}
+</style>
+
+</body>
+</html>
