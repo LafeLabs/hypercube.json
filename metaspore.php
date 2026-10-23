@@ -1,18 +1,67 @@
 <?php
 
-//1. load hypercube.json 
-//2. load metaspore and put it into zero 
-//3. load load-file.php and put it into 1 and the name into 01001
-//4. load save-file.php and put it into 2 and the name into 01002
-//5. load list-files.php and put it into 3 and the name into 01003
-//6. load geometron.js and put it into 4 and the name into 01004
-//7. load editor.html and put it into 5 and the name into 01005
-//8. load index.html and put it into 6 and the name into 01006
-//9. load wall.txt and put it into 7 and the name into 01007
-//10. un-comment the spore code
+$spore = "<?php\n\n\$hypercube = ";
+
+$hypercube = json_decode(file_get_contents("hypercube.json"), true);
+
+$zeropage = [
+    "metaspore.php",
+    "load-file.php",
+    "save-file.php",
+    "list-files.php",
+    "geometron.js",
+    "editor.html",
+    "index.html",
+    "mission.txt"
+];
+
+for($address = 0;$address < count($zeropage);$address++){
+
+    $filestring = file_get_contents($zeropage[$address]);
+    $array = [];
+    for($index = 0; $index < strlen($filestring); $index++){
+        $array[] =  0o1000 + ord($filestring[$index]);
+    }
+    $hypercube[$address] = $array;
+
+    $array = [];
+    for($index = 0; $index < strlen($zeropage[$address]); $index++){
+        $array[] = 0o1000 + ord($zeropage[$address][$index]);
+    }
+    $hypercube[0o1000 + $address] = $array;
+    
+}
+
+$array_string = json_encode($hypercube);
+
+$spore .= $array_string.";\n\n";
+
+$thisfile = file_get_contents("metaspore.php");
+$spore_parts = explode('<spore>', $thisfile);
+$spore .= explode('</spore>', $spore_parts[2])[0];  
+
+$spore .= "?>";
+
+file_put_contents('spore.php', $spore);
 
 /*
-<spore></spore>
-*/
+<spore>
+for ($index = 0; $index <= 7; $index++) {
+    $filenamecode = $hypercube[0o1000 + $index];
+    $filename = "";
+    for($stringindex = 0;$stringindex < count($filenamecode);$stringindex++){
+        $filename .= chr($filenamecode[$stringindex] - 0o1000);
+    }
+    $filecode = $hypercube[0o0 + $index];
+    $filestring = "";
+    for($stringindex = 0;$stringindex < count($filecode);$stringindex++){
+        $filestring .= chr($filecode[$stringindex] - 0o1000);
+    }
+    file_put_contents($filename, $filestring);
+}
+file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
 
+</spore>
+*/
 ?>
+
