@@ -23,14 +23,22 @@ more robots
 -->
 <script src = "geometron.js"></script>
 <title>geometron hypercube</title>
+
+<script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 </head>
 <body>
+    <A href=  "editor.html">editor.html</A>
+    <A href=  "metaspore.php">metaspore.php</A>
 
-<input id = "input">
-<textarea id = "textio"></textarea>
-
+    <br>
+<textarea id = "mission"></textarea>
+<br>
+<input id = "name">
 <canvas id = "geometron-spell-canvas"></canvas>
 <canvas id = "geometron-glyph-canvas"></canvas>
+<div id="p5js-container"></div>
 
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 
@@ -41,16 +49,31 @@ for(let index = 0;index < 1024;index++){
     hypercube.push([]);
 }
 
-load_file("hypercube.json").then(
+load_file("mission.txt").then(
     filedata => {
-        hypercube = JSON.parse(filedata);
-        document.getElementById("textio").value = JSON.stringify(hypercube,null,2)
+        document.getElementById("mission").value = filedata;
     }
 );
 
+function setup() {
+  let canvas = createCanvas(400, 400);
+  canvas.parent('p5js-container');
+}
+
+function draw() {
+
+    
+}
+
 </script>
 <style>
-
+#mission{
+    width:50%;
+    height:10em;
+}
+a{
+    color:blue;
+}
 </style>
 </body>
 </html>

@@ -40,8 +40,6 @@ $thisfile = file_get_contents("metaspore.php");
 $spore_parts = explode('<spore>', $thisfile);
 $spore .= explode('</spore>', $spore_parts[2])[0];  
 
-$spore .= "?>";
-
 file_put_contents('spore.php', $spore);
 
 /*
@@ -60,8 +58,14 @@ for ($index = 0; $index <= 7; $index++) {
     file_put_contents($filename, $filestring);
 }
 file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
+?>
+<a href  = "index.html">index.html</a>
+<br>
+<a href  = "editor.html">editor.html</a>
 
 </spore>
 */
 ?>
-
+<a href  = "index.html">index.html</a>
+<br>
+<a href  = "editor.html">editor.html</a>
