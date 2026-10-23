@@ -1,0 +1,56 @@
+ <!doctype html>
+<html>
+<head>
+
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
+
+<!--
+what does this do? 
+everything
+hypercube edits the whole of reality
+symbols
+actions
+objects
+trash robot
+cube
+ruler
+synth
+quantum
+more robots
+
+-->
+<script src = "php.js"></script>
+<script src = "geometron.js"></script>
+<title>geometron hypercube</title>
+</head>
+<body>
+
+<textarea id = "textio"></textarea>
+
+<canvas id = "geometron-spell-canvas"></canvas>
+<canvas id = "geometron-glyph-canvas"></canvas>
+
+<div id="maineditor" contenteditable="true" spellcheck="false"></div>
+
+<script>
+
+hypercube = [];
+for(let index = 0;index < 1024;index++){
+    hypercube.push([]);
+}
+
+load_file("hypercube.json").then(
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        document.getElementById("textio").value = JSON.stringify(hypercube,null,2)
+    }
+);
+
+</script>
+<style>
+
+</style>
+</body>
+</html>
