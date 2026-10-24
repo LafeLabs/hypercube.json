@@ -38,7 +38,7 @@ linkfeed
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"></script>
     </head>
 <body>
-<select id = "mode" name="mode">
+<select name="mode">
       <option value="mission">mission</option>
       <option value="wall">wall</option>
       <option value="icon">icon</option>
@@ -104,6 +104,7 @@ linkfeed
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 
 <script>
+mode = "mission";
 
 codesquaresize = 100;
 qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -179,21 +180,28 @@ window.addEventListener('DOMContentLoaded', () => {
   const eightsSelect = document.querySelector('select[name="eights"]');
   const onesSelect = document.querySelector('select[name="ones"]');
 
+  const modeSelect = document.querySelector('select[name="mode"]');
+
   sixtyfoursSelect.value = "0";
   eightsSelect.value = "0";
   onesSelect.value = "7";
+  modeSelect.value = "mission";
 
   function handleChange() {
     const sixtyfours = parseInt(sixtyfoursSelect.value);
     const eights = parseInt(eightsSelect.value);
     const ones = parseInt(onesSelect.value);
     address =  64 * sixtyfours + (8 * eights) + ones;
-    
+    mode = modeSelect.value;
+    if(mode == "wall"){
+        
+    }
   }
 
   sixtyfoursSelect.addEventListener('change', handleChange);
   eightsSelect.addEventListener('change', handleChange);
   onesSelect.addEventListener('change', handleChange);
+   modeSelect.addEventListener('change', handleChange); 
 });
 </script>
 <style>
