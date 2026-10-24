@@ -20,6 +20,12 @@ edit the symbols in 01010 through 01777
 edit the icon which is icon.json
 
 
+MODES:
+EDIT CODE
+EDIT GEOMETRON GLYPH
+EDIT ICON
+SOUND INTO P5JS
+
 -->
 <script src = "geometron.js"></script>
 <title>geometron hypercube</title>
@@ -29,15 +35,13 @@ edit the icon which is icon.json
 
 </head>
 <body>
-    <A href=  "editor.html">editor.html</A>
-    <A href=  "metaspore.php">metaspore.php</A>
-
-    <br>
+<A href=  "editor.html">editor.html</A>
+<A href=  "metaspore.php">metaspore.php</A>
+<p></p>
 <textarea id = "mission"></textarea>
-<br>
-<input id = "name">
-<canvas id = "geometron-spell-canvas"></canvas>
 <canvas id = "geometron-glyph-canvas"></canvas>
+<canvas id = "geometron-spell-canvas"></canvas>
+
 <div id="p5js-container"></div>
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 
@@ -64,14 +68,50 @@ function draw() {
     
 }
 
+
+load_file("hypercube.json").then(
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        mainGVM = new GVM();
+        mainGVM.canvas.width = 400;
+        mainGVM.canvas.height = 400;
+        mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+        mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+        mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+        mainGVM.style.line0 = 3;
+        mainGVM.hypercube = hypercube;
+        mainGVM.glyph = [0o336,0o332,0o337,0o341,0o340,0o333,0o340,0o341,0o336,0o332,0o341,0o207];
+        drawGlyph(document.getElementById("geometron-glyph-canvas"), mainGVM);
+        mainGVM.style.line0 = 1;
+        mainGVM.canvas.unit = 40;
+        spellGlyph(document.getElementById("geometron-spell-canvas"), mainGVM);
+        
+        
+    }
+);
+
 </script>
 <style>
+#geometron-glyph-canvas{
+    width:400px;
+    height:400px;
+    border:solid;
+}
+#geometron-spell-canvas{
+    width:400px;
+    height:400px;
+    border:solid;
+}
+
 #mission{
-    width:50%;
-    height:10em;
+    width:30%;
+    height:5em;
 }
 a{
     color:blue;
+}
+#p5js-container canvas{
+    border:solid;
 }
 </style>
 </body>
