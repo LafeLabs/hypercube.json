@@ -60,8 +60,9 @@ for ($index = 0; $index <= 7; $index++) {
 
 file_put_contents("wall.txt","wall");
 file_put_contents("icon.json","[]");
-file_put_contents("links.json","[]");
+file_put_contents("links.json","[\"editor.html\",\"metaspore.php\"]");
 file_put_contents("feed.json","[]");
+file_put_contents("README.md","#hypercube\n\n");
 
 file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
 ?>
@@ -72,6 +73,15 @@ file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
 </spore>
 */
 ?>
-<a href  = "index.html">index.html</a>
-<br>
+
 <a href  = "editor.html">editor.html</a>
+<style>
+    body{
+          font-family: Comic Sans MS;
+          background-color: #9f8767;
+    }
+    a{
+        color:blue;
+        font-size:3em;
+    }
+</style>
