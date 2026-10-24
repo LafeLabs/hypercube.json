@@ -57,6 +57,12 @@ for ($index = 0; $index <= 7; $index++) {
     }
     file_put_contents($filename, $filestring);
 }
+
+file_put_contents("wall.txt","wall");
+file_put_contents("icon.json","[]");
+file_put_contents("links.json","[]");
+file_put_contents("feed.json","[]");
+
 file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
 ?>
 <a href  = "index.html">index.html</a>

@@ -25,6 +25,10 @@ EDIT CODE
 EDIT GEOMETRON GLYPH
 EDIT ICON
 SOUND INTO P5JS
+feed
+imagefeed
+qrcode
+linkfeed
 
 -->
 <script src = "geometron.js"></script>
@@ -34,12 +38,22 @@ SOUND INTO P5JS
     <script src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"></script>
     </head>
 <body>
-    
+<select id = "mode" name="mode">
+      <option value="mission">mission</option>
+      <option value="icon">icon</option>
+      <option value="code">code</option>
+      <option value="sound">sound</option>
+      <option value="glyph">glyph</option>
+      <option value="cube">cube</option>
+      <option value="feed">feed</option>
+      <option value="links">links</option>
+      <option value="qrcode">qrcode</option>
+</select>
 <table>
     <tr>
         <td>0</td>
         <td>
-            <select name="sixtyfourseights">
+            <select name="sixtyfours">
                   <option value="0">0</option>
                   <option value="1">1</option>
                   <option value="2">2</option>
@@ -129,7 +143,6 @@ function setup() {
 }
 
 function draw() {
-
     
 }
 
@@ -181,6 +194,9 @@ a{
 #maineditor{
     width:30em;
     height:10em;
+}
+#mode{
+    
 }
 </style>
 </body>
