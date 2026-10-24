@@ -29,12 +29,54 @@ SOUND INTO P5JS
 -->
 <script src = "geometron.js"></script>
 <title>geometron hypercube</title>
-
 <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-</head>
+    <script src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"></script>
+    </head>
 <body>
+    
+<table>
+    <tr>
+        <td>0</td>
+        <td>
+            <select name="sixtyfourseights">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+        <td>
+            <select name="eights">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+        <td>
+            <select name="ones">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+    </tr>
+</table> 
+<div id ="qrcode"></div>
 <A href=  "editor.html">editor.html</A>
 <A href=  "metaspore.php">metaspore.php</A>
 <p></p>
@@ -46,6 +88,27 @@ SOUND INTO P5JS
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 
 <script>
+
+codesquaresize = 100;
+qrcode = new QRCode(document.getElementById("qrcode"), {
+	text: window.location.href,
+	width: codesquaresize,
+	height: codesquaresize,
+	colorDark : "#000000",
+	colorLight : "#ffffff",
+	correctLevel : QRCode.CorrectLevel.H
+});
+
+editor = ace.edit("maineditor");
+editor.setTheme("ace/theme/github");
+//editor.setTheme("ace/theme/vibrant_ink");
+editor.getSession().setMode("ace/mode/html");
+editor.getSession().setUseWrapMode(true);
+editor.$blockScrolling = Infinity;
+editor.setTheme("ace/theme/vibrant_ink");
+editor.setOption("useWorker", false);
+
+editor.setValue("code");
 
 hypercube = [];
 for(let index = 0;index < 1024;index++){
@@ -61,6 +124,8 @@ load_file("mission.txt").then(
 function setup() {
   let canvas = createCanvas(400, 400);
   canvas.parent('p5js-container');
+  strokeWeight(3);
+  circle(200,200,100);
 }
 
 function draw() {
@@ -112,6 +177,10 @@ a{
 }
 #p5js-container canvas{
     border:solid;
+}
+#maineditor{
+    width:30em;
+    height:10em;
 }
 </style>
 </body>
