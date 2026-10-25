@@ -41,16 +41,15 @@ linkfeed
       <option value="mission">mission</option>
       <option value="wall">wall</option>
       <option value="icon">icon</option>
+      <option value="feed">feed</option>
       <option value="root_magic_code">root_magic_code</option>
       <option value="canvas_code">canvas_code</option>
       <option value="keyboard">keyboard</option>
-      <option value="feed">feed</option>
       <option value="images">images</option>
       <option value="links">links</option>
       <option value="qrcode">qrcode</option>
       <option value="glyph_cube">glyph_cube</option>
       <option value="glyph">glyph</option>
-
 </select>
 <table id = "addresstable">
     <tr>
@@ -98,6 +97,9 @@ linkfeed
 <textarea id = "mission"></textarea>
 
 <textarea id = "wall"></textarea>
+<input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
+<div id = "feed"></div>
+
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
 
@@ -120,6 +122,10 @@ thispoint.y = 0;
 function invisible(){
     document.getElementById("mission").style.display = "none";
     document.getElementById("wall").style.display = "none";
+    document.getElementById("feed").style.display = "none";
+    document.getElementById("clear-feed").style.display = "none";
+    document.getElementById("feed-post").style.display = "none";
+
     document.getElementById("qrcode").style.display = "none";
     document.getElementById("geometron-glyph-canvas").style.display = "none";
     document.getElementById("geometron-spell-canvas").style.display = "none";
@@ -171,6 +177,70 @@ load_file("wall.txt").then(
     }
 );
 
+feed = [];
+load_file("feed.json").then(
+    filedata => {
+        feed = JSON.parse(filedata);
+        loadFeed();
+    }
+);
+
+
+document.getElementById("clear-feed").onclick = function(){
+
+    feed = [];
+    loadFeed();
+    saveFeed();
+    document.getElementById("feed-post").value = "";
+    document.getElementById("feed-post").select();
+    
+}
+
+document.getElementById("feed-post").onchange = function(){
+    if(this.value.slice(-5) == ".html" || this.value.slice(0,8) == "https://" || this.value.slice(0,8) == "HTTPS://" || this.value.slice(0,7) == "http://"){
+        post = "<a href = \"" + this.value + "\">" + this.value + "</a>";
+    }
+    else{
+        post = this.value;
+    }
+    feed.unshift(post);
+    this.value = "";
+    loadFeed();
+    saveFeed();
+}
+
+function loadFeed(){
+
+    document.getElementById("feed").innerHTML = "";
+    for(let index = 0;index < feed.length;index++){
+        let newSign = document.createElement("DIV");
+        newSign.id = "sign-" + index.toString();
+        newSign.className = "sign";
+        newSign.innerHTML = feed[index];
+        let deleteButton = document.createElement("SPAN");
+        deleteButton.className = "delete-button";
+        deleteButton.innerHTML = "DELETE";
+        deleteButton.onclick  = function(){
+            let localIndex = parseInt(this.parentNode.id.split("-")[1]);
+            let newFeed = [];
+            for(let index = 0;index < feed.length;index++){
+                if(index != localIndex){
+                    newFeed.push(feed[index]);
+                }
+            }
+            feed = newFeed;
+            saveFeed();
+            loadFeed();
+        }
+        newSign.appendChild(deleteButton);
+        document.getElementById("feed").appendChild(newSign);
+    }
+}
+
+function saveFeed(){
+    data = encodeURIComponent(JSON.stringify(feed,null,"   "));
+    save_file("feed.json",data);
+}
 document.getElementById("mission").onkeyup = function() {
     
     mission = this.value;
@@ -324,7 +394,13 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("icon").style.display = "block";
         document.getElementById("delete-stroke").style.display = "block";  
         document.getElementById("clear-icon").style.display = "block";    
-        
+    }
+    if(mode == "feed"){
+        invisible();
+        document.getElementById("feed").style.display = "block";
+        document.getElementById("clear-feed").style.display = "inline";
+        document.getElementById("feed-post").style.display = "inline";
+
     }
     
   }
@@ -364,6 +440,18 @@ select {
 
 #mission {
   position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+}
+#feed {
+  position: fixed;
+  overflow:scroll;
   bottom: 40px;
   left: 40px;
   right: 40px;
@@ -434,6 +522,50 @@ a{
 }
 #addresstable{
     display:none;
+}
+
+#feed-post{
+    background-color:black;
+    color:#00ff00;
+    font-family:Courier;
+    font-size:3em;
+}
+#clear-feed:hover{
+    background-color:#400000;
+}
+
+#clear-feed{
+    font-size:3em;
+    color:red;
+    background-color:black;
+    width:6em;
+    border:solid;
+    border-radius:0.5em;
+    cursor:pointer;
+    border-color:red;
+    text-align:center;
+}
+.sign{
+  background-color: #9f8767;
+  font-size:2em;
+  font-family:Comic Sans MS;
+  border:solid;
+  padding:1em 1em 1em 1em;
+  margin:1em 1em 1em 1em;
+  border-radius:0.5em;
+}
+.delete-button{
+    color:red;
+    border:solid;
+    border-color:red;
+    background-color:black;
+    font-family:Arial;
+    padding:0.25em 0.25em 0.25em 0.25em;
+    border-radius:0.25em;
+    cursor:pointer;
+}
+.delete-button:hover{
+    background-color:#400000;
 }
 </style>
 </body>
