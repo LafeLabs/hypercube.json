@@ -44,12 +44,13 @@ linkfeed
       <option value="root_magic_code">root_magic_code</option>
       <option value="canvas_code">canvas_code</option>
       <option value="keyboard">keyboard</option>
-      <option value="sound">sound</option>
-      <option value="glyph">glyph</option>
       <option value="feed">feed</option>
       <option value="images">images</option>
       <option value="links">links</option>
       <option value="qrcode">qrcode</option>
+      <option value="glyph_cube">glyph_cube</option>
+      <option value="glyph">glyph</option>
+
 </select>
 <table id = "addresstable">
     <tr>
@@ -100,11 +101,21 @@ linkfeed
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
 
-<div id="p5js-container"></div>
+<div id="icon"></div>
+<div class= "button" id ="delete-stroke">DELETE</div>
+<div class= "button" id ="clear-icon">CLEAR</div>
+
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 
 <script>
 mode = "mission";
+icon = [];
+inLine = false;
+brushstroke = [];
+thispoint = {};
+thispoint.x = 0;
+thispoint.y = 0;
+
 
 function invisible(){
     document.getElementById("mission").style.display = "none";
@@ -112,8 +123,12 @@ function invisible(){
     document.getElementById("qrcode").style.display = "none";
     document.getElementById("geometron-glyph-canvas").style.display = "none";
     document.getElementById("geometron-spell-canvas").style.display = "none";
-    document.getElementById("p5js-container").style.display = "none";    
+    document.getElementById("icon").style.display = "none";    
     document.getElementById("maineditor").style.display = "none";    
+
+    document.getElementById("delete-stroke").style.display = "none";    
+    document.getElementById("clear-icon").style.display = "none";    
+    
 }
 invisible();
 document.getElementById("mission").style.display = "block";
@@ -174,7 +189,7 @@ document.getElementById("wall").onkeyup = function() {
 
 function setup() {
  
-  let container = document.getElementById('p5js-container');
+  let container = document.getElementById('icon');
   
   if(innerWidth > innerHeight){
       p5jsquare = innerHeight - 160;
@@ -184,23 +199,25 @@ function setup() {
   }
   let canvas = createCanvas(p5jsquare, p5jsquare);
   container.style.left = ((innerWidth - p5jsquare)/2).toString() + "px";
-  canvas.parent('p5js-container');
+  canvas.parent('icon');
   noFill();
   background("#9f8767");
   //circle(width/2,height/2,250);
       stroke(0);
     strokeWeight(10);
+
+    load_file("icon.json").then(
+        filedata => {
+            icon = JSON.parse(filedata);
+            drawicon();
+        }
+    );
+    
 }
 
-icon = [];
-inLine = false;
-brushstroke = [];
-thispoint = {};
-thispoint.x = 0;
-thispoint.y = 0;
 
 function draw() {
-    if(mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
+    if(mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && mode == "icon"){
           if (mouseIsPressed === true) {
             if(inLine == false){
                 var  point = {};
@@ -212,19 +229,46 @@ function draw() {
             inLine = true;
             if(mouseX != pmouseX || mouseY != pmouseY){
                 var  point = {};
-                point.x = (100*mouseX/width).toFixed(1);
-                point.y = (100*mouseY/width).toFixed(1);
+                point.x = Math.round(1000*mouseX/width);
+                point.y = Math.round(1000*mouseY/width);
                 brushstroke.push(point);
             }
           }
           else{
               if(inLine){
                   icon.push(JSON.parse(JSON.stringify(brushstroke)));
+                  data = encodeURIComponent(JSON.stringify(icon,null,3));
+                  save_file("icon.json",data);
                   brushstroke = [];
               }
               inLine = false;
           }
       }
+}
+
+document.getElementById("clear-icon").onclick = function(){
+    icon = [];
+    drawicon();
+    data = encodeURIComponent(JSON.stringify(icon,null,3));
+    save_file("icon.json",data);
+}
+
+document.getElementById("delete-stroke").onclick = function(){
+    icon.pop();
+    drawicon();
+    data = encodeURIComponent(JSON.stringify(icon,null,3));
+    save_file("icon.json",data);
+}
+
+function drawicon(){
+    clear();
+    background("#9f8767");
+    for(var strokeindex = 0;strokeindex < icon.length;strokeindex++){
+        for(var pointindex = 1;pointindex < icon[strokeindex].length;pointindex++){
+            
+            line(0.001*width*icon[strokeindex][pointindex - 1].x,0.001*width*icon[strokeindex][pointindex - 1].y,0.001*width*icon[strokeindex][pointindex].x,0.001*width*icon[strokeindex][pointindex].y);
+        }
+    }
 }
 
 
@@ -277,7 +321,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(mode == "icon"){
         invisible();
-        document.getElementById("p5js-container").style.display = "block";
+        document.getElementById("icon").style.display = "block";
+        document.getElementById("delete-stroke").style.display = "block";  
+        document.getElementById("clear-icon").style.display = "block";    
+        
     }
     
   }
@@ -345,10 +392,10 @@ a{
 }
 
 
-#p5js-container canvas{
+#icon canvas{
     border:solid;
 }
-#p5js-container{
+#icon{
   position: fixed;
   bottom: 40px;
   left: 40px;
@@ -360,6 +407,19 @@ a{
   font-size: 3em;
 
 }
+.button{
+    border:solid;
+    cursor:pointer;
+    text-align:center;
+    width:8em;
+}
+.button:hover{
+    background-color:#808080;
+}
+.button:active{
+    background-color:green;
+}
+
 #maineditor{
     width:30em;
     height:10em;
