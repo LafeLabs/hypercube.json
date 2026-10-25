@@ -9,8 +9,7 @@
 <!--
 edit and read the wall
 edit code in all the action layers of the cube:
-010-037,0300-0377,0400-0477,0700-0777
-
+010-037,0300-0377
 edit the shapes in the shape tables:
 0200-0277,0500-0577,0600-0677,
 edit the keyboard 040-0176
@@ -42,7 +41,9 @@ linkfeed
       <option value="mission">mission</option>
       <option value="wall">wall</option>
       <option value="icon">icon</option>
-      <option value="code">code</option>
+      <option value="root_magic_code">root_magic_code</option>
+      <option value="canvas_code">canvas_code</option>
+      <option value="keyboard">keyboard</option>
       <option value="sound">sound</option>
       <option value="glyph">glyph</option>
       <option value="feed">feed</option>
@@ -92,7 +93,6 @@ linkfeed
     </tr>
 </table> 
 
-<h1 id = "title">MISSION</h1>
 <div id ="qrcode"></div>
 <textarea id = "mission"></textarea>
 
@@ -105,6 +105,18 @@ linkfeed
 
 <script>
 mode = "mission";
+
+function invisible(){
+    document.getElementById("mission").style.display = "none";
+    document.getElementById("wall").style.display = "none";
+    document.getElementById("qrcode").style.display = "none";
+    document.getElementById("geometron-glyph-canvas").style.display = "none";
+    document.getElementById("geometron-spell-canvas").style.display = "none";
+    document.getElementById("p5js-container").style.display = "none";    
+    document.getElementById("maineditor").style.display = "none";    
+}
+invisible();
+document.getElementById("mission").style.display = "block";
 
 codesquaresize = 100;
 qrcode = new QRCode(document.getElementById("qrcode"), {
@@ -138,16 +150,81 @@ load_file("mission.txt").then(
     }
 );
 
-function setup() {
-  let canvas = createCanvas(400, 400);
-  canvas.parent('p5js-container');
-  strokeWeight(3);
-  noFill();
-  circle(200,200,100);
+load_file("wall.txt").then(
+    filedata => {
+        document.getElementById("wall").value = filedata;
+    }
+);
+
+document.getElementById("mission").onkeyup = function() {
+    
+    mission = this.value;
+    data = encodeURIComponent(this.value);
+    save_file("mission.txt",data);
+    
 }
 
-function draw() {
+document.getElementById("wall").onkeyup = function() {
     
+    wall = this.value;
+    data = encodeURIComponent(this.value);
+    save_file("wall.txt",data);
+    
+}
+
+function setup() {
+ 
+  let container = document.getElementById('p5js-container');
+  
+  if(innerWidth > innerHeight){
+      p5jsquare = innerHeight - 160;
+  }
+  else{
+      p5jsquare = innerWidth - 160;
+  }
+  let canvas = createCanvas(p5jsquare, p5jsquare);
+  container.style.left = ((innerWidth - p5jsquare)/2).toString() + "px";
+  canvas.parent('p5js-container');
+  noFill();
+  background("#9f8767");
+  //circle(width/2,height/2,250);
+      stroke(0);
+    strokeWeight(10);
+}
+
+icon = [];
+inLine = false;
+brushstroke = [];
+thispoint = {};
+thispoint.x = 0;
+thispoint.y = 0;
+
+function draw() {
+    if(mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height){
+          if (mouseIsPressed === true) {
+            if(inLine == false){
+                var  point = {};
+                point.x = Math.round(1000*mouseX/width);
+                point.y = Math.round(1000*mouseY/width);
+                brushstroke.push(point);
+            }
+            line(mouseX, mouseY, pmouseX, pmouseY);
+            inLine = true;
+            if(mouseX != pmouseX || mouseY != pmouseY){
+                var  point = {};
+                point.x = (100*mouseX/width).toFixed(1);
+                point.y = (100*mouseY/width).toFixed(1);
+                brushstroke.push(point);
+            }
+          }
+          else{
+              if(inLine){
+                  icon.push(JSON.parse(JSON.stringify(brushstroke)));
+                  brushstroke = [];
+              }
+              inLine = false;
+          }
+      }
 }
 
 
@@ -168,11 +245,8 @@ load_file("hypercube.json").then(
         mainGVM.canvas.unit = 40;
         spellGlyph(document.getElementById("geometron-spell-canvas"), mainGVM);
         
-        
     }
 );
-
-
 
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -194,8 +268,18 @@ window.addEventListener('DOMContentLoaded', () => {
     address =  64 * sixtyfours + (8 * eights) + ones;
     mode = modeSelect.value;
     if(mode == "wall"){
-        
+        invisible();
+        document.getElementById("wall").style.display = "block";
     }
+    if(mode == "mission"){
+        invisible();
+        document.getElementById("mission").style.display = "block";
+    }
+    if(mode == "icon"){
+        invisible();
+        document.getElementById("p5js-container").style.display = "block";
+    }
+    
   }
 
   sixtyfoursSelect.addEventListener('change', handleChange);
@@ -226,19 +310,55 @@ textarea{
     display:none;
 }
 
-#mission{
-    width:30%;
-    height:5em;
+select {
+  font-size: 1.2em;
+  margin: 10px 0 0 40px;
 }
-#wall{
-    display:none;
+
+#mission {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+}
+
+
+#wall {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+  display:none;
 }
 a{
     color:blue;
 }
+
+
 #p5js-container canvas{
     border:solid;
-    display:none;
+}
+#p5js-container{
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+
 }
 #maineditor{
     width:30em;
