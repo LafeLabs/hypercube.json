@@ -46,7 +46,6 @@ linkfeed
       <option value="canvas_code">canvas_code</option>
       <option value="keyboard">keyboard</option>
       <option value="images">images</option>
-      <option value="links">links</option>
       <option value="qrcode">qrcode</option>
       <option value="glyph_cube">glyph_cube</option>
       <option value="glyph">glyph</option>
@@ -100,6 +99,7 @@ linkfeed
 <input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
 <div id = "feed"></div>
 
+
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
 
@@ -125,6 +125,7 @@ function invisible(){
     document.getElementById("feed").style.display = "none";
     document.getElementById("clear-feed").style.display = "none";
     document.getElementById("feed-post").style.display = "none";
+
 
     document.getElementById("qrcode").style.display = "none";
     document.getElementById("geometron-glyph-canvas").style.display = "none";
@@ -186,6 +187,7 @@ load_file("feed.json").then(
 );
 
 
+
 document.getElementById("clear-feed").onclick = function(){
 
     feed = [];
@@ -195,6 +197,7 @@ document.getElementById("clear-feed").onclick = function(){
     document.getElementById("feed-post").select();
     
 }
+
 
 document.getElementById("feed-post").onchange = function(){
     if(this.value.slice(-5) == ".html" || this.value.slice(0,8) == "https://" || this.value.slice(0,8) == "HTTPS://" || this.value.slice(0,7) == "http://"){
@@ -208,6 +211,8 @@ document.getElementById("feed-post").onchange = function(){
     loadFeed();
     saveFeed();
 }
+
+
 
 function loadFeed(){
 
@@ -241,6 +246,8 @@ function saveFeed(){
     data = encodeURIComponent(JSON.stringify(feed,null,"   "));
     save_file("feed.json",data);
 }
+
+
 document.getElementById("mission").onkeyup = function() {
     
     mission = this.value;
@@ -400,16 +407,19 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("feed").style.display = "block";
         document.getElementById("clear-feed").style.display = "inline";
         document.getElementById("feed-post").style.display = "inline";
-
+        document.getElementById("feed-post").select();
     }
+
     
   }
 
   sixtyfoursSelect.addEventListener('change', handleChange);
   eightsSelect.addEventListener('change', handleChange);
   onesSelect.addEventListener('change', handleChange);
-   modeSelect.addEventListener('change', handleChange); 
+  modeSelect.addEventListener('change', handleChange); 
 });
+
+
 </script>
 <style>
 body{
@@ -461,8 +471,6 @@ select {
   box-sizing: border-box;
   font-size: 3em;
 }
-
-
 #wall {
   position: fixed;
   bottom: 40px;
@@ -533,7 +541,6 @@ a{
 #clear-feed:hover{
     background-color:#400000;
 }
-
 #clear-feed{
     font-size:3em;
     color:red;
