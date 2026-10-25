@@ -60,7 +60,6 @@ for ($index = 0; $index <= 7; $index++) {
 
 file_put_contents("wall.txt","wall");
 file_put_contents("icon.json","[]");
-file_put_contents("links.json","[\"editor.html\",\"metaspore.php\"]");
 file_put_contents("feed.json","[]");
 file_put_contents("README.md","#hypercube\n\n");
 
