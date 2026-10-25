@@ -58,7 +58,7 @@ for ($index = 0; $index <= 7; $index++) {
     file_put_contents($filename, $filestring);
 }
 
-file_put_contents("wall.txt","wall");
+file_put_contents("wall.txt","THIS IS THE WALL!");
 file_put_contents("icon.json","[]");
 file_put_contents("feed.json","[]");
 file_put_contents("README.md","#hypercube\n\n");
