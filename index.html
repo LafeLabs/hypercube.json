@@ -410,6 +410,20 @@ window.addEventListener('DOMContentLoaded', () => {
   modeSelect.addEventListener('change', handleChange); 
 });
 
+
+document.getElementById("maineditor").onkeyup = function(){
+    data = editor.getSession().getValue();
+    array = [];
+    for(let index = 0;index < data.length;index++){
+        action = data.charCodeAt(index);
+        symbol = action + 512;
+        array.push(symbol);
+    }
+    hypercube[address] = array;
+    save_file("hypercube.json",JSON.stringify(hypercube,null,2));
+    
+}
+
 </script>
 <style>
 body{
