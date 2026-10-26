@@ -63,24 +63,18 @@
         </td>
     </tr>
 </table> 
-
 <div id ="qrcode"></div>
 <textarea id = "mission"></textarea>
-
 <textarea id = "wall"></textarea>
 <input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
 <div id = "feed"></div>
-
-
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
-
 <div id="icon"></div>
 <div class= "button" id ="delete-stroke">DELETE</div>
 <div class= "button" id ="clear-icon">CLEAR</div>
-
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
-
+<table id = "keyboard"></table>
 <script>
 mode = "mission";
 icon = [];
@@ -98,7 +92,10 @@ function invisible(){
     document.getElementById("clear-feed").style.display = "none";
     document.getElementById("feed-post").style.display = "none";
 
+    document.getElementById("addresstable").style.display = "none";
 
+    document.getElementById("keyboard").style.display = "none";
+    
     document.getElementById("qrcode").style.display = "none";
     document.getElementById("geometron-glyph-canvas").style.display = "none";
     document.getElementById("geometron-spell-canvas").style.display = "none";
@@ -138,6 +135,27 @@ for(let index = 0;index < 1024;index++){
     hypercube.push([]);
 }
 
+function buildKeyboard(){
+    for(let keyboardrow = 4;keyboardrow <= 15;keyboardrow++){
+        let newtr = document.createElement("TR");
+        for(let keyboardcol = 0;keyboardcol <= 0o7;keyboardcol++){
+            if(!(keyboardrow == 15 && keyboardcol == 7)){
+                let newtd = document.createElement("TD");
+                newtd.innerHTML =  String.fromCharCode(keyboardrow*8 + keyboardcol) + ":";
+                let newinput = document.createElement("input");
+                newtd.appendChild(newinput);
+                newinput.value =  "0" + (hypercube[keyboardrow*8 + keyboardcol][0]).toString(8);
+                
+                newtr.appendChild(newtd);
+                
+            }
+
+        }
+        document.getElementById("keyboard").appendChild(newtr);
+        
+    }
+}
+
 load_file("mission.txt").then(
     filedata => {
         document.getElementById("mission").value = filedata;
@@ -157,8 +175,6 @@ load_file("feed.json").then(
         loadFeed();
     }
 );
-
-
 
 document.getElementById("clear-feed").onclick = function(){
 
@@ -183,7 +199,6 @@ document.getElementById("feed-post").onchange = function(){
     loadFeed();
     saveFeed();
 }
-
 
 
 function loadFeed(){
@@ -324,6 +339,7 @@ function drawicon(){
 load_file("hypercube.json").then(
     filedata => {
         hypercube = JSON.parse(filedata);
+        buildKeyboard();
         mainGVM = new GVM();
         mainGVM.canvas.width = 400;
         mainGVM.canvas.height = 400;
@@ -350,8 +366,8 @@ window.addEventListener('DOMContentLoaded', () => {
   const modeSelect = document.querySelector('select[name="mode"]');
 
   sixtyfoursSelect.value = "0";
-  eightsSelect.value = "0";
-  onesSelect.value = "7";
+  eightsSelect.value = "1";
+  onesSelect.value = "0";
   modeSelect.value = "mission";
 
   function handleChange() {
@@ -383,22 +399,21 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(mode == "javascript"){
         invisible();
-          sixtyfoursSelect.value = "0";
-          eightsSelect.value = "1";
-          onesSelect.value = "0";
-        const sixtyfours = parseInt(sixtyfoursSelect.value);
-        const eights = parseInt(eightsSelect.value);
-        const ones = parseInt(onesSelect.value);
-        address =  64 * sixtyfours + (8 * eights) + ones;
-        javascriptArray = hypercube[address];
-        document.getElementById("maineditor").style.display = "block";
-        document.getElementById("addresstable").style.display = "block";
-        code = "";
-        for(let index = 0;index < javascriptArray.length; index++){
-            code += String.fromCharCode(javascriptArray[index] - 512);
+        if((address >= 0o10 && address <= 0o176) || (address >= 0o300 && address <= 0o377)){
+            javascriptArray = hypercube[address];
+            document.getElementById("maineditor").style.display = "block";
+            document.getElementById("addresstable").style.display = "block";
+            code = "";
+            for(let index = 0;index < javascriptArray.length; index++){
+                code += String.fromCharCode(javascriptArray[index] - 512);
+            }
+            editor.setValue(code);
         }
-        editor.setValue(code);
 
+    }
+    if(mode == "keyboard"){
+        invisible();
+        document.getElementById("keyboard").style.display = "block";
     }
 
 
@@ -520,7 +535,9 @@ a{
 .button:active{
     background-color:green;
 }
-
+#keyboard input{
+    width:3em;
+}
 #maineditor{
   position: fixed;
   bottom: 40px;
