@@ -1,0 +1,11 @@
+# Minimal [spore](spore.php)
+
+ - [metaspore.php](metaspore.php)
+ - [load-file.php](load-file.php)
+ - [save-file.php](save-file.php)
+ - [list-files.php](list-files.php)
+ - [php.js](php.js)
+ - [editor.html](editor.html)
+ - [index.html](index.html)
+ - [mission.txt](mission.txt)
+ - [hypercube.json](hypercube.json)
