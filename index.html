@@ -9,10 +9,9 @@
 <title>geometron hypercube</title>
 <script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
 <script src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src = "https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.6.0/addons/p5.sound.js"></script>
     </head>
 <body>
-<select name="mode">
+<select  onchange="this.blur()" name="mode">
       <option value="mission">mission</option>
       <option value="wall">wall</option>
       <option value="icon">icon</option>
@@ -89,6 +88,7 @@
 <div id = "feed"></div>
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
+<input id = "geometron-glyph-input">
 <div id="icon"></div>
 <div class= "button" id ="delete-stroke">DELETE</div>
 <div class= "button" id ="clear-icon">CLEAR</div>
@@ -123,6 +123,8 @@ function invisible(){
 
     document.getElementById("delete-stroke").style.display = "none";    
     document.getElementById("clear-icon").style.display = "none";    
+    document.getElementById("geometron-glyph-input").style.display = "none"; 
+    
     
 }
 invisible();
@@ -354,24 +356,47 @@ function drawicon(){
     }
 }
 
+geometronSquare = 600;
+if(innerWidth > innerHeight){
+    geometronSquare =  0.5*innerWidth - 50;
+}
+else{
+    geometronSquare =  0.5*innerHeight - 50;
+}
 
 load_file("hypercube.json").then(
     filedata => {
         hypercube = JSON.parse(filedata);
         buildKeyboard();
         mainGVM = new GVM();
-        mainGVM.canvas.width = 600;
-        mainGVM.canvas.height = 600;
+        spellGVM = new GVM(); 
+        geometronGlyphCanvas = document.getElementById("geometron-glyph-canvas");
+        geometronSpellCanvas = document.getElementById("geometron-spell-canvas");
+        
+        mainGVM.canvas.width = geometronSquare;
+        mainGVM.canvas.height = geometronSquare;
         mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
         mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
         mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
         mainGVM.style.line0 = 3;
         mainGVM.hypercube = hypercube;
-        mainGVM.glyph = [0o336,0o332,0o337,0o341,0o340,0o333,0o340,0o341,0o336,0o332,0o341,0o207];
+        
+        mainGVM.glyph = hypercube[mainGVM.address];
+        spellGVM.glyph = mainGVM.glyph;
+        spellGVM.canvas.width = geometronSquare;
+        spellGVM.canvas.height = geometronSquare;
+        spellGVM.canvas.x0 = 0.5 * spellGVM.canvas.width; 
+        spellGVM.canvas.y0 = 0.5 * spellGVM.canvas.height;
+        spellGVM.canvas.unit = 0.3 * spellGVM.canvas.width; 
+        spellGVM.style.line0 = 3;
+        spellGVM.hypercube = hypercube;
+   
         drawGlyph(document.getElementById("geometron-glyph-canvas"), mainGVM);
-        mainGVM.style.line0 = 1;
-        mainGVM.canvas.unit = 40;
-        spellGlyph(document.getElementById("geometron-spell-canvas"), mainGVM);
+
+        
+        spellGVM.style.line0 = 1;
+        spellGVM.canvas.unit = 40;
+        spellGlyph(document.getElementById("geometron-spell-canvas"), spellGVM);
         
     }
 );
@@ -441,7 +466,11 @@ window.addEventListener('DOMContentLoaded', () => {
     if(mode == "geometron"){
         invisible();
         document.getElementById("geometron-glyph-canvas").style.display = "block";
-            document.getElementById("geometron-spell-canvas").style.display = "block";    
+        document.getElementById("geometron-spell-canvas").style.display = "block";    
+        document.getElementById("geometron-glyph-input").style.display = "block"; 
+
+        document.getElementById("addresstable").style.display = "block"; 
+        
     }
 
 
@@ -513,6 +542,123 @@ document.getElementById("width-input").onchange = function(){
         correctLevel : QRCode.CorrectLevel.H 
     });
 }
+
+
+function keyPressed() {
+    if(mode == "geometron" && document.activeElement != document.getElementById("geometron-glyph-input")){
+
+        let actionKey = null;
+        if (key.length === 1) {
+            actionKey = key.charCodeAt(0);
+        } else {
+            // Map special keys to unique integers below 32
+            if (keyCode === BACKSPACE) actionKey = 0o10;  
+            if (keyCode === ENTER)     actionKey = 0o12; 
+            if (keyCode === LEFT_ARROW)  actionKey = 0o20;  
+            if (keyCode === RIGHT_ARROW) actionKey = 0o21;  
+            if (keyCode === UP_ARROW)    actionKey = 0o22;  
+            if (keyCode === DOWN_ARROW)  actionKey = 0o23;
+        }
+        
+        if(actionKey >= 0o40 && actionKey < 0o177){
+            
+            if(mainGVM.keyboard.mode === 0){
+                if(mainGVM.hypercube[actionKey][0] < 0o40){
+                    rootMagic(mainGVM,mainGVM.hypercube[actionKey][0]);
+                } else{
+                    let oldGlyph = mainGVM.glyph;
+                    mainGVM.glyph = [];
+                    for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                        if(oldGlyph[glyphIndex] != 0o207){
+                            mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                        } else{
+                                mainGVM.glyph.push(mainGVM.hypercube[actionKey][0]);
+                                mainGVM.glyph.push(0o207);
+                        }
+                    }
+                }            
+            }
+            if(mainGVM.keyboard.mode === 1){
+                let oldGlyph = mainGVM.glyph;
+                mainGVM.glyph = [];
+                for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                    if(oldGlyph[glyphIndex] != 0o207){
+                        mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                    } else{
+                        mainGVM.glyph.push(actionKey + 0o1000);
+                        mainGVM.glyph.push(0o207);
+                    }
+                }
+            }
+            if(mainGVM.keyboard.mode === 2){
+                let oldGlyph = mainGVM.glyph;
+                mainGVM.glyph = [];
+                for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                    if(oldGlyph[glyphIndex] != 0o207){
+                        mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                    } else{
+                        mainGVM.glyph.push(actionKey);
+                        mainGVM.glyph.push(0o207);
+                    }
+                }
+            }
+        }
+        if (actionKey === 0o10) {
+            //delete character before the cursor
+            rootMagic(mainGVM,0o10);
+        }
+        if (actionKey === 0o12) {
+            rootMagic(mainGVM,0o12);
+    
+            //ENTER key
+            //mode switch from shape to font to word        
+        }
+        if (actionKey === 0o20) {
+            //0o20 left arrow, cursor back
+            rootMagic(mainGVM,0o20);
+        }
+        if (actionKey === 0o21) {
+            //right arrow, cursor forward
+            rootMagic(mainGVM,0o21);
+        }
+        if (actionKey === 0o22) {
+            //up arrow, move up in hypercube
+            rootMagic(mainGVM,0o22);
+            mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+            mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+            mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+        }
+        if (actionKey === 0o23) {
+            //down arrow,move down in hypercube
+            rootMagic(mainGVM,0o23);
+            mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+            mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+            mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+
+        }
+        
+
+        mainGVM.glyph = mainGVM.glyph.filter(item => item !== null);
+
+        spellGVM.glyph = mainGVM.glyph; 
+        
+        drawGlyph(geometronGlyphCanvas, mainGVM);
+        spellGlyph(geometronSpellCanvas, spellGVM);
+        
+//        saveHypercube(mainGVM);
+        mainGVM.hypercube[mainGVM.address] = mainGVM.glyph.filter(cursorCode => cursorCode !== 0o207);
+        let glyphString = "";
+        for(let index = 0;index < mainGVM.glyph.length;index++){
+            if(mainGVM.glyph[index] != 0o207 && mainGVM.glyph[index] != null){
+                glyphString += "0" + mainGVM.glyph[index].toString(8) + ",";
+            }
+        }
+        document.getElementById("geometron-glyph-input").value = glyphString;
+    }
+}
+
+
+
 </script>
 <style>
 body{
@@ -524,8 +670,7 @@ textarea{
         font-family: Comic Sans MS;
 }
 #geometron-glyph-canvas{
-    width:600px;
-    height:600px;
+
     border:solid;
     display:none;
     position:absolute;
@@ -535,8 +680,7 @@ textarea{
     
 }
 #geometron-spell-canvas{
-    width:600px;
-    height:600px;
+
     border:solid;
     display:none;
     position:absolute;
