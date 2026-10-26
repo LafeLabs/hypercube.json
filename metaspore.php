@@ -63,7 +63,7 @@ file_put_contents("icon.json","[]");
 file_put_contents("feed.json","[]");
 file_put_contents("README.md","#hypercube\n\n");
 
-file_put_contents("hypercube.json", json_encode($hypercube, JSON_PRETTY_PRINT));
+file_put_contents("hypercube.json", json_encode($hypercube));
 ?>
 <a href  = "index.html">index.html</a>
 <br>
