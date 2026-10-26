@@ -20,7 +20,7 @@
       <option value="javascript">javascript</option>
       <option value="keyboard">keyboard</option>
       <option value="qrcode">qrcode</option>
-      <option value="glyph">glyph</option>
+      <option value="geometron">geometron</option>
 </select>
 <table id = "addresstable">
     <tr>
@@ -63,7 +63,26 @@
         </td>
     </tr>
 </table> 
-<div id ="qrcode"></div>
+
+<div id ="qrcode-box">
+    <table>
+        <tr>
+            <td>ENTER URL:</td>
+            <td><input id = "urlinput"/></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>SET WIDTH:</td>
+            <td><input id = "width-input"></td>
+            <td>PIXELS</td>
+        </tr>
+    </table>
+    <a id = "linklink"></a>
+    <div id = "qrcode"></div>
+</div>
+
+
 <textarea id = "mission"></textarea>
 <textarea id = "wall"></textarea>
 <input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
@@ -96,7 +115,7 @@ function invisible(){
 
     document.getElementById("keyboard").style.display = "none";
     
-    document.getElementById("qrcode").style.display = "none";
+    document.getElementById("qrcode-box").style.display = "none";
     document.getElementById("geometron-glyph-canvas").style.display = "none";
     document.getElementById("geometron-spell-canvas").style.display = "none";
     document.getElementById("icon").style.display = "none";    
@@ -351,8 +370,8 @@ load_file("hypercube.json").then(
         hypercube = JSON.parse(filedata);
         buildKeyboard();
         mainGVM = new GVM();
-        mainGVM.canvas.width = 400;
-        mainGVM.canvas.height = 400;
+        mainGVM.canvas.width = 600;
+        mainGVM.canvas.height = 600;
         mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
         mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
         mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
@@ -425,6 +444,15 @@ window.addEventListener('DOMContentLoaded', () => {
         invisible();
         document.getElementById("keyboard").style.display = "block";
     }
+    if(mode == "qrcode"){
+        invisible();
+        document.getElementById("qrcode-box").style.display = "block";
+    }
+    if(mode == "geometron"){
+        invisible();
+        document.getElementById("geometron-glyph-canvas").style.display = "block";
+            document.getElementById("geometron-spell-canvas").style.display = "block";    
+    }
 
 
   }
@@ -460,16 +488,24 @@ textarea{
         font-family: Comic Sans MS;
 }
 #geometron-glyph-canvas{
-    width:400px;
-    height:400px;
+    width:600px;
+    height:600px;
     border:solid;
     display:none;
+    position:absolute;
+    right:10px;
+    bottom:10px;
+
+    
 }
 #geometron-spell-canvas{
-    width:400px;
-    height:400px;
+    width:600px;
+    height:600px;
     border:solid;
     display:none;
+    position:absolute;
+    left:10px;
+    bottom:10px;
 }
 
 select {
@@ -562,7 +598,6 @@ a{
   display:none;
 }
 #qrcode{
-    display:none;
 }
 #mode{
     

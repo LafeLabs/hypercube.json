@@ -169,7 +169,7 @@ function drawGlyph(canvas, gvm){
 
 function spellGlyph(canvas, gvm){
     gvm.canvas.x0 = 30;
-    gvm.canvas.y0 = 50 + gvm.canvas.unit;
+    gvm.canvas.y0 = 30 + gvm.canvas.unit;
     gvm.style.line0 = 2;
     gvm.cursor.x = gvm.canvas.x0;
     gvm.cursor.y = gvm.canvas.y0;
