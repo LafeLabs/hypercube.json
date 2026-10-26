@@ -128,16 +128,6 @@ function invisible(){
 invisible();
 document.getElementById("mission").style.display = "block";
 
-codesquaresize = 100;
-qrcode = new QRCode(document.getElementById("qrcode"), {
-	text: window.location.href,
-	width: codesquaresize,
-	height: codesquaresize,
-	colorDark : "#000000",
-	colorLight : "#ffffff",
-	correctLevel : QRCode.CorrectLevel.H
-});
-
 editor = ace.edit("maineditor");
 editor.setTheme("ace/theme/github");
 //editor.setTheme("ace/theme/vibrant_ink");
@@ -477,6 +467,52 @@ document.getElementById("maineditor").onkeyup = function(){
     
 }
 
+
+codesquaresize = 512; 
+marginsize = 40; 
+fontsize = 12; 
+globalurl = window.location.href.split("qrcode.html")[0]; 
+
+document.getElementById("urlinput").value = ""; 
+document.getElementById("urlinput").select(); 
+
+document.getElementById("urlinput").onchange = function(){ 
+    globalurl = this.value; 
+    qrcode.makeCode(globalurl); 
+    document.getElementById("linklink").href = globalurl; 
+    document.getElementById("linklink").innerHTML = globalurl; 
+} 
+
+document.getElementById("linklink").href = globalurl; 
+document.getElementById("linklink").innerHTML = globalurl; 
+document.getElementById("urlinput").value = globalurl; 
+
+var qrContainer = document.getElementById("qrcode");
+qrcode = new QRCode(qrContainer, { 
+    text: globalurl, 
+    width: codesquaresize, 
+    height: codesquaresize, 
+    colorDark : "#000000", 
+    colorLight : "#ffffff", 
+    correctLevel : QRCode.CorrectLevel.H 
+}); 
+
+document.getElementById("width-input").value = codesquaresize.toString(); 
+
+document.getElementById("width-input").onchange = function(){ 
+    codesquaresize = parseInt(this.value); 
+    qrcode._htOption.width = codesquaresize; 
+    qrcode._htOption.height = codesquaresize; 
+    qrContainer.innerHTML = ""; 
+    qrcode = new QRCode(qrContainer, { 
+        text: globalurl, 
+        width: codesquaresize, 
+        height: codesquaresize, 
+        colorDark : "#000000", 
+        colorLight : "#ffffff", 
+        correctLevel : QRCode.CorrectLevel.H 
+    });
+}
 </script>
 <style>
 body{
