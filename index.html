@@ -143,9 +143,18 @@ function buildKeyboard(){
                 let newtd = document.createElement("TD");
                 newtd.innerHTML =  String.fromCharCode(keyboardrow*8 + keyboardcol) + ":";
                 let newinput = document.createElement("input");
+                newinput.id = String.fromCharCode(keyboardrow*8 + keyboardcol);
+                newinput.onchange = function(){
+                    let localaddress = parseInt(this.id);
+                    let newkey = parseInt(this.value,8);
+                    if (!isNaN(newkey) && newkey >= 0 && newkey <= 1023) {
+                        hypercube[localaddress] = [newkey];
+                        save_file("hypercube.json",JSON.stringify(hypercube,null,2));
+
+                    }
+                }
                 newtd.appendChild(newinput);
                 newinput.value =  "0" + (hypercube[keyboardrow*8 + keyboardcol][0]).toString(8);
-                
                 newtr.appendChild(newtd);
                 
             }
