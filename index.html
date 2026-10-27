@@ -80,15 +80,22 @@
     <a id = "linklink"></a>
     <div id = "qrcode"></div>
 </div>
-
-
 <textarea id = "mission"></textarea>
 <textarea id = "wall"></textarea>
 <input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
 <div id = "feed"></div>
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
-<input id = "geometron-glyph-input">
+<table>
+    <tr>
+        <td>
+            <input id = "geometron-address">:
+        </td>
+        <td>
+            <input id = "geometron-glyph-input">
+        </td>
+    </tr>
+</table>
 <div id="icon"></div>
 <div class= "button" id ="delete-stroke">DELETE</div>
 <div class= "button" id ="clear-icon">CLEAR</div>
@@ -161,7 +168,7 @@ function buildKeyboard(){
                     if (!isNaN(newkey) && newkey >= 0 && newkey <= 1023) {
                         hypercube[localaddress][0] = newkey;
                         
-                        save_file("hypercube.json",JSON.stringify(hypercube,null,2));
+                        save_file("hypercube.json",JSON.stringify(hypercube));
 
                     }
                 }
@@ -482,6 +489,10 @@ window.addEventListener('DOMContentLoaded', () => {
     if(mode == "qrcode"){
         invisible();
         document.getElementById("qrcode-box").style.display = "block";
+        document.body.style.backgroundColor = "white";
+    }
+    else{
+        document.body.style.backgroundColor = "#9f8767";
     }
     if(mode == "geometron"){
         
@@ -506,9 +517,14 @@ window.addEventListener('DOMContentLoaded', () => {
         sixtyfoursSelect.value = sixtyfours.toString();
         eightsSelect.value = eights.toString();
         onesSelect.value = ones.toString();
+        mainGVM.glyph = hypercube[address];
+        mainGVM.glyph.push(0o207);
+        spellGVM.glyph = mainGVM.glyph;
+        spellGVM.address = mainGVM.address;
+        
+        drawGlyph(geometronGlyphCanvas, mainGVM);
+        spellGlyph(geometronSpellCanvas, spellGVM);
 
-        
-        
     }
 
 
@@ -530,7 +546,7 @@ document.getElementById("maineditor").onkeyup = function(){
         array.push(symbol);
     }
     hypercube[address] = array;
-    save_file("hypercube.json",JSON.stringify(hypercube,null,2));
+    save_file("hypercube.json",JSON.stringify(hypercube));
     
 }
 
@@ -665,6 +681,8 @@ function keyPressed() {
             mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
             mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
             mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+
+            
         }
         if (actionKey === 0o23) {
             //down arrow,move down in hypercube
@@ -685,6 +703,11 @@ function keyPressed() {
         
 //        saveHypercube(mainGVM);
         mainGVM.hypercube[mainGVM.address] = mainGVM.glyph.filter(cursorCode => cursorCode !== 0o207);
+        
+        hypercube[mainGVM.address] =  mainGVM.hypercube[mainGVM.address];
+        save_file("hypercube.json",JSON.stringify(hypercube));
+        
+        
         let glyphString = "";
         for(let index = 0;index < mainGVM.glyph.length;index++){
             if(mainGVM.glyph[index] != 0o207 && mainGVM.glyph[index] != null){
