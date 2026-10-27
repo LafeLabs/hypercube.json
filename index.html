@@ -46,6 +46,7 @@
 <div id = "feed"></div>
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
+<div id = "keymode"></div>
 <input id = "address">
 <input id = "geometron-glyph-input">
 <div id="icon"></div>
@@ -70,6 +71,7 @@ function invisible(){
     document.getElementById("clear-feed").style.display = "none";
     document.getElementById("feed-post").style.display = "none";
 
+    document.getElementById("keymode").style.display = "none";
 
     document.getElementById("keyboard").style.display = "none";
     
@@ -434,6 +436,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("geometron-spell-canvas").style.display = "block";    
         document.getElementById("geometron-glyph-input").style.display = "block"; 
         document.getElementById("address").style.display = "block"; 
+        
+        document.getElementById("keymode").style.display = "block";
+        document.getElementById("keymode").innerHTML= "action";
 
         for(let index = 0o277;index >= 0o220; index--){
             if(mainGVM.hypercube[index].length > 0){
@@ -589,7 +594,16 @@ function keyPressed() {
         }
         if (actionKey === 0o12) {
             rootMagic(mainGVM,0o12);
-    
+            if(mainGVM.keyboard.mode == 0){
+                document.getElementById("keymode").innerHTML= "action";
+            }
+            if(mainGVM.keyboard.mode == 1){
+                document.getElementById("keymode").innerHTML= "font";
+            }
+            if(mainGVM.keyboard.mode == 2){
+                document.getElementById("keymode").innerHTML= "wordstack";
+            }
+
             //ENTER key
             //mode switch from shape to font to word        
         }
@@ -648,7 +662,7 @@ document.getElementById("address").onchange = function(){
     this.blur();
     let localaddress = parseInt(this.value,8);
     if(!Number.isNaN(localaddress) && mode == "geometron"){
-       if((localaddress >= 0o1000 && localaddress <= 0o1777) || (localaddress >= 0o200 && localaddress <= 0o277)){
+       if((localaddress >= 0o1000 && localaddress <= 0o1777) || (localaddress >= 0o200 && localaddress <= 0o277) || (localaddress >= 0o500 && localaddress <= 0o677)){
            mainGVM.address = localaddress;
            spellGVM.address = localaddress;
            mainGVM.glyph = hypercube[mainGVM.address];
@@ -723,8 +737,15 @@ textarea{
     bottom:10px;
 }
 
+#keymode{
+    position:absolute;
+    right:0px;
+    top:0px;
+    font-size:3em;
+}
+
 select {
-  font-size: 1.2em;
+  font-size: 2em;
   margin: 10px 0 0 40px;
 }
 
@@ -833,6 +854,8 @@ a{
     background-color:black;
     width:6em;
     border:solid;
+    padding-left:1em;
+    padding-right:1em;
     border-radius:0.5em;
     cursor:pointer;
     border-color:red;
@@ -850,6 +873,7 @@ a{
 .delete-button{
     color:red;
     border:solid;
+    font-size:0.5em;
     border-color:red;
     background-color:black;
     font-family:Arial;
