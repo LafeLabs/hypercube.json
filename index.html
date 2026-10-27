@@ -415,9 +415,9 @@ window.addEventListener('DOMContentLoaded', () => {
   modeSelect.value = "mission";
 
   function handleChange() {
-    const sixtyfours = parseInt(sixtyfoursSelect.value);
-    const eights = parseInt(eightsSelect.value);
-    const ones = parseInt(onesSelect.value);
+    sixtyfours = parseInt(sixtyfoursSelect.value);
+    eights = parseInt(eightsSelect.value);
+    ones = parseInt(onesSelect.value);
     address =  64 * sixtyfours + (8 * eights) + ones;
     mode = modeSelect.value;
     if(mode == "wall"){
@@ -453,6 +453,26 @@ window.addEventListener('DOMContentLoaded', () => {
             }
             editor.setValue(code);
         }
+        else{
+            address = 0o10;
+            sixtyfours = Math.floor(address / 64) % 8;
+            eights     = Math.floor(address / 8) % 8;
+            ones       = address % 8;
+            
+            sixtyfoursSelect.value = sixtyfours.toString();
+            eightsSelect.value = eights.toString();
+            onesSelect.value = ones.toString();
+    
+            javascriptArray = hypercube[address];
+            document.getElementById("maineditor").style.display = "block";
+            document.getElementById("addresstable").style.display = "block";
+            code = "";
+            for(let index = 0;index < javascriptArray.length; index++){
+                code += String.fromCharCode(javascriptArray[index] - 512);
+            }
+            editor.setValue(code);
+            
+        }
 
     }
     if(mode == "keyboard"){
@@ -464,12 +484,30 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("qrcode-box").style.display = "block";
     }
     if(mode == "geometron"){
+        
         invisible();
         document.getElementById("geometron-glyph-canvas").style.display = "block";
         document.getElementById("geometron-spell-canvas").style.display = "block";    
         document.getElementById("geometron-glyph-input").style.display = "block"; 
 
         document.getElementById("addresstable").style.display = "block"; 
+        
+        for(let index = 0o277;index >= 0o220; index--){
+            if(mainGVM.hypercube[index].length > 0){
+                mainGVM.address = index;
+                address = index;
+                break;
+            }
+        }
+        sixtyfours = Math.floor(address / 64) % 8;
+        eights     = Math.floor(address / 8) % 8;
+        ones       = address % 8;
+        
+        sixtyfoursSelect.value = sixtyfours.toString();
+        eightsSelect.value = eights.toString();
+        onesSelect.value = ones.toString();
+
+        
         
     }
 
