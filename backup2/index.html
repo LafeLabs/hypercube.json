@@ -1,0 +1,894 @@
+ <!doctype html>
+<html>
+<head>
+
+    <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
+<script src = "geometron.js"></script>
+<title>geometron hypercube</title>
+<script src="https://cdn.jsdelivr.net/npm/p5@1.7.0/lib/p5.js"></script>
+<script src = "https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    </head>
+<body>
+<select  onchange="this.blur()" name="mode">
+      <option value="mission">mission</option>
+      <option value="wall">wall</option>
+      <option value="icon">icon</option>
+      <option value="feed">feed</option>
+      <option value="javascript">javascript</option>
+      <option value="keyboard">keyboard</option>
+      <option value="qrcode">qrcode</option>
+      <option value="geometron">geometron</option>
+</select>
+<table id = "addresstable">
+    <tr>
+        <td>0</td>
+        <td>
+            <select name="sixtyfours">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+        <td>
+            <select name="eights">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+        <td>
+            <select name="ones">
+                  <option value="0">0</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+            </select>
+        </td>
+    </tr>
+</table> 
+
+<div id ="qrcode-box">
+    <table>
+        <tr>
+            <td>ENTER URL:</td>
+            <td><input id = "urlinput"/></td>
+        </tr>
+    </table>
+    <table>
+        <tr>
+            <td>SET WIDTH:</td>
+            <td><input id = "width-input"></td>
+            <td>PIXELS</td>
+        </tr>
+    </table>
+    <a id = "linklink"></a>
+    <div id = "qrcode"></div>
+</div>
+<textarea id = "mission"></textarea>
+<textarea id = "wall"></textarea>
+<input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
+<div id = "feed"></div>
+<canvas id = "geometron-glyph-canvas"></canvas>
+<canvas id = "geometron-spell-canvas"></canvas>
+<table>
+    <tr>
+        <td>
+            <input id = "geometron-address">:
+        </td>
+        <td>
+            <input id = "geometron-glyph-input">
+        </td>
+    </tr>
+</table>
+<div id="icon"></div>
+<div class= "button" id ="delete-stroke">DELETE</div>
+<div class= "button" id ="clear-icon">CLEAR</div>
+<div id="maineditor" contenteditable="true" spellcheck="false"></div>
+<table id = "keyboard"></table>
+<script>
+mode = "mission";
+icon = [];
+inLine = false;
+brushstroke = [];
+thispoint = {};
+thispoint.x = 0;
+thispoint.y = 0;
+address = 07;//mission
+
+function invisible(){
+    document.getElementById("mission").style.display = "none";
+    document.getElementById("wall").style.display = "none";
+    document.getElementById("feed").style.display = "none";
+    document.getElementById("clear-feed").style.display = "none";
+    document.getElementById("feed-post").style.display = "none";
+
+    document.getElementById("addresstable").style.display = "none";
+
+    document.getElementById("keyboard").style.display = "none";
+    
+    document.getElementById("qrcode-box").style.display = "none";
+    document.getElementById("geometron-glyph-canvas").style.display = "none";
+    document.getElementById("geometron-spell-canvas").style.display = "none";
+    document.getElementById("icon").style.display = "none";    
+    document.getElementById("maineditor").style.display = "none";    
+
+    document.getElementById("delete-stroke").style.display = "none";    
+    document.getElementById("clear-icon").style.display = "none";    
+    document.getElementById("geometron-glyph-input").style.display = "none"; 
+    
+    
+}
+invisible();
+document.getElementById("mission").style.display = "block";
+
+editor = ace.edit("maineditor");
+editor.setTheme("ace/theme/github");
+//editor.setTheme("ace/theme/vibrant_ink");
+editor.getSession().setMode("ace/mode/javascript");
+editor.getSession().setUseWrapMode(true);
+editor.$blockScrolling = Infinity;
+editor.setTheme("ace/theme/vibrant_ink");
+editor.setOption("useWorker", false);
+
+editor.setValue("code");
+
+hypercube = [];
+for(let index = 0;index < 1024;index++){
+    hypercube.push([]);
+}
+
+function buildKeyboard(){
+    for(let keyboardrow = 4;keyboardrow <= 15;keyboardrow++){
+        let newtr = document.createElement("TR");
+        for(let keyboardcol = 0;keyboardcol <= 0o7;keyboardcol++){
+            if(!(keyboardrow == 15 && keyboardcol == 7)){
+                let newtd = document.createElement("TD");
+                newtd.innerHTML = "0" + (keyboardrow*8 + keyboardcol).toString(8) +  " [" + String.fromCharCode(keyboardrow*8 + keyboardcol) + "]:";
+                let newinput = document.createElement("input");
+                newinput.id = (keyboardrow*8 + keyboardcol).toString(8);
+                newinput.onchange = function(){
+                    let localaddress = parseInt(this.id,8);
+                    let newkey = parseInt(this.value,8);
+                    if (!isNaN(newkey) && newkey >= 0 && newkey <= 1023) {
+                        hypercube[localaddress][0] = newkey;
+                        
+                        save_file("hypercube.json",JSON.stringify(hypercube));
+
+                    }
+                }
+                newtd.appendChild(newinput);
+                newinput.value =  "0" + (hypercube[keyboardrow*8 + keyboardcol][0]).toString(8);
+                newtr.appendChild(newtd);
+                
+            }
+
+        }
+        document.getElementById("keyboard").appendChild(newtr);
+        
+    }
+}
+
+load_file("mission.txt").then(
+    filedata => {
+        document.getElementById("mission").value = filedata;
+    }
+);
+
+load_file("wall.txt").then(
+    filedata => {
+        document.getElementById("wall").value = filedata;
+    }
+);
+
+feed = [];
+load_file("feed.json").then(
+    filedata => {
+        feed = JSON.parse(filedata);
+        loadFeed();
+    }
+);
+
+document.getElementById("clear-feed").onclick = function(){
+
+    feed = [];
+    loadFeed();
+    saveFeed();
+    document.getElementById("feed-post").value = "";
+    document.getElementById("feed-post").select();
+    
+}
+
+
+document.getElementById("feed-post").onchange = function(){
+    if(this.value.slice(-5) == ".html" || this.value.slice(0,8) == "https://" || this.value.slice(0,8) == "HTTPS://" || this.value.slice(0,7) == "http://"){
+        post = "<a href = \"" + this.value + "\">" + this.value + "</a>";
+    }
+    else{
+        post = this.value;
+    }
+    feed.unshift(post);
+    this.value = "";
+    loadFeed();
+    saveFeed();
+}
+
+
+function loadFeed(){
+
+    document.getElementById("feed").innerHTML = "";
+    for(let index = 0;index < feed.length;index++){
+        let newSign = document.createElement("DIV");
+        newSign.id = "sign-" + index.toString();
+        newSign.className = "sign";
+        newSign.innerHTML = feed[index];
+        let deleteButton = document.createElement("SPAN");
+        deleteButton.className = "delete-button";
+        deleteButton.innerHTML = "DELETE";
+        deleteButton.onclick  = function(){
+            let localIndex = parseInt(this.parentNode.id.split("-")[1]);
+            let newFeed = [];
+            for(let index = 0;index < feed.length;index++){
+                if(index != localIndex){
+                    newFeed.push(feed[index]);
+                }
+            }
+            feed = newFeed;
+            saveFeed();
+            loadFeed();
+        }
+        newSign.appendChild(deleteButton);
+        document.getElementById("feed").appendChild(newSign);
+    }
+}
+
+function saveFeed(){
+    data = encodeURIComponent(JSON.stringify(feed,null,"   "));
+    save_file("feed.json",data);
+}
+
+
+document.getElementById("mission").onkeyup = function() {
+    
+    mission = this.value;
+    data = encodeURIComponent(this.value);
+    save_file("mission.txt",data);
+    
+}
+
+document.getElementById("wall").onkeyup = function() {
+    
+    wall = this.value;
+    data = encodeURIComponent(this.value);
+    save_file("wall.txt",data);
+    
+}
+
+function setup() {
+ 
+  let container = document.getElementById('icon');
+  
+  if(innerWidth > innerHeight){
+      p5jsquare = innerHeight - 160;
+  }
+  else{
+      p5jsquare = innerWidth - 160;
+  }
+  let canvas = createCanvas(p5jsquare, p5jsquare);
+  container.style.left = ((innerWidth - p5jsquare)/2).toString() + "px";
+  canvas.parent('icon');
+  noFill();
+  background("#9f8767");
+  //circle(width/2,height/2,250);
+      stroke(0);
+    strokeWeight(10);
+
+    load_file("icon.json").then(
+        filedata => {
+            icon = JSON.parse(filedata);
+            drawicon();
+        }
+    );
+    
+}
+
+
+function draw() {
+    if(mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height && mode == "icon"){
+          if (mouseIsPressed === true) {
+            if(inLine == false){
+                var  point = {};
+                point.x = Math.round(1000*mouseX/width);
+                point.y = Math.round(1000*mouseY/width);
+                brushstroke.push(point);
+            }
+            line(mouseX, mouseY, pmouseX, pmouseY);
+            inLine = true;
+            if(mouseX != pmouseX || mouseY != pmouseY){
+                var  point = {};
+                point.x = Math.round(1000*mouseX/width);
+                point.y = Math.round(1000*mouseY/width);
+                brushstroke.push(point);
+            }
+          }
+          else{
+              if(inLine){
+                  icon.push(JSON.parse(JSON.stringify(brushstroke)));
+                  data = encodeURIComponent(JSON.stringify(icon,null,3));
+                  save_file("icon.json",data);
+                  brushstroke = [];
+              }
+              inLine = false;
+          }
+      }
+}
+
+document.getElementById("clear-icon").onclick = function(){
+    icon = [];
+    drawicon();
+    data = encodeURIComponent(JSON.stringify(icon,null,3));
+    save_file("icon.json",data);
+}
+
+document.getElementById("delete-stroke").onclick = function(){
+    icon.pop();
+    drawicon();
+    data = encodeURIComponent(JSON.stringify(icon,null,3));
+    save_file("icon.json",data);
+}
+
+function drawicon(){
+    clear();
+    background("#9f8767");
+    for(var strokeindex = 0;strokeindex < icon.length;strokeindex++){
+        for(var pointindex = 1;pointindex < icon[strokeindex].length;pointindex++){
+            
+            line(0.001*width*icon[strokeindex][pointindex - 1].x,0.001*width*icon[strokeindex][pointindex - 1].y,0.001*width*icon[strokeindex][pointindex].x,0.001*width*icon[strokeindex][pointindex].y);
+        }
+    }
+}
+
+geometronSquare = 600;
+if(innerWidth > innerHeight){
+    geometronSquare =  0.5*innerWidth - 50;
+}
+else{
+    geometronSquare =  0.5*innerHeight - 50;
+}
+
+load_file("hypercube.json").then(
+    filedata => {
+        hypercube = JSON.parse(filedata);
+        buildKeyboard();
+        mainGVM = new GVM();
+        spellGVM = new GVM(); 
+        geometronGlyphCanvas = document.getElementById("geometron-glyph-canvas");
+        geometronSpellCanvas = document.getElementById("geometron-spell-canvas");
+        
+        mainGVM.canvas.width = geometronSquare;
+        mainGVM.canvas.height = geometronSquare;
+        mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+        mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+        mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+        mainGVM.style.line0 = 3;
+        mainGVM.hypercube = hypercube;
+        
+        mainGVM.glyph = hypercube[mainGVM.address];
+        spellGVM.glyph = mainGVM.glyph;
+        spellGVM.canvas.width = geometronSquare;
+        spellGVM.canvas.height = geometronSquare;
+        spellGVM.canvas.x0 = 0.5 * spellGVM.canvas.width; 
+        spellGVM.canvas.y0 = 0.5 * spellGVM.canvas.height;
+        spellGVM.canvas.unit = 0.3 * spellGVM.canvas.width; 
+        spellGVM.style.line0 = 3;
+        spellGVM.hypercube = hypercube;
+   
+        drawGlyph(document.getElementById("geometron-glyph-canvas"), mainGVM);
+
+        
+        spellGVM.style.line0 = 1;
+        spellGVM.canvas.unit = 40;
+        spellGlyph(document.getElementById("geometron-spell-canvas"), spellGVM);
+        
+    }
+);
+
+
+window.addEventListener('DOMContentLoaded', () => {
+  const sixtyfoursSelect = document.querySelector('select[name="sixtyfours"]');
+  const eightsSelect = document.querySelector('select[name="eights"]');
+  const onesSelect = document.querySelector('select[name="ones"]');
+
+  const modeSelect = document.querySelector('select[name="mode"]');
+
+  sixtyfoursSelect.value = "0";
+  eightsSelect.value = "1";
+  onesSelect.value = "0";
+  modeSelect.value = "mission";
+
+  function handleChange() {
+    sixtyfours = parseInt(sixtyfoursSelect.value);
+    eights = parseInt(eightsSelect.value);
+    ones = parseInt(onesSelect.value);
+    address =  64 * sixtyfours + (8 * eights) + ones;
+    mode = modeSelect.value;
+    if(mode == "wall"){
+        invisible();
+        document.getElementById("wall").style.display = "block";
+    }
+    if(mode == "mission"){
+        invisible();
+        document.getElementById("mission").style.display = "block";
+    }
+    if(mode == "icon"){
+        invisible();
+        document.getElementById("icon").style.display = "block";
+        document.getElementById("delete-stroke").style.display = "block";  
+        document.getElementById("clear-icon").style.display = "block";    
+    }
+    if(mode == "feed"){
+        invisible();
+        document.getElementById("feed").style.display = "block";
+        document.getElementById("clear-feed").style.display = "inline";
+        document.getElementById("feed-post").style.display = "inline";
+        document.getElementById("feed-post").select();
+    }
+    if(mode == "javascript"){
+        invisible();
+        if((address >= 0o10 && address <= 0o176) || (address >= 0o300 && address <= 0o377)){
+            javascriptArray = hypercube[address];
+            document.getElementById("maineditor").style.display = "block";
+            document.getElementById("addresstable").style.display = "block";
+            code = "";
+            for(let index = 0;index < javascriptArray.length; index++){
+                code += String.fromCharCode(javascriptArray[index] - 512);
+            }
+            editor.setValue(code);
+        }
+        else{
+            address = 0o10;
+            sixtyfours = Math.floor(address / 64) % 8;
+            eights     = Math.floor(address / 8) % 8;
+            ones       = address % 8;
+            
+            sixtyfoursSelect.value = sixtyfours.toString();
+            eightsSelect.value = eights.toString();
+            onesSelect.value = ones.toString();
+    
+            javascriptArray = hypercube[address];
+            document.getElementById("maineditor").style.display = "block";
+            document.getElementById("addresstable").style.display = "block";
+            code = "";
+            for(let index = 0;index < javascriptArray.length; index++){
+                code += String.fromCharCode(javascriptArray[index] - 512);
+            }
+            editor.setValue(code);
+            
+        }
+
+    }
+    if(mode == "keyboard"){
+        invisible();
+        document.getElementById("keyboard").style.display = "block";
+    }
+    if(mode == "qrcode"){
+        invisible();
+        document.getElementById("qrcode-box").style.display = "block";
+        document.body.style.backgroundColor = "white";
+    }
+    else{
+        document.body.style.backgroundColor = "#9f8767";
+    }
+    if(mode == "geometron"){
+        
+        invisible();
+        document.getElementById("geometron-glyph-canvas").style.display = "block";
+        document.getElementById("geometron-spell-canvas").style.display = "block";    
+        document.getElementById("geometron-glyph-input").style.display = "block"; 
+
+        document.getElementById("addresstable").style.display = "block"; 
+        
+        for(let index = 0o277;index >= 0o220; index--){
+            if(mainGVM.hypercube[index].length > 0){
+                mainGVM.address = index;
+                address = index;
+                break;
+            }
+        }
+        sixtyfours = Math.floor(address / 64) % 8;
+        eights     = Math.floor(address / 8) % 8;
+        ones       = address % 8;
+        
+        sixtyfoursSelect.value = sixtyfours.toString();
+        eightsSelect.value = eights.toString();
+        onesSelect.value = ones.toString();
+        mainGVM.glyph = hypercube[address];
+        mainGVM.glyph.push(0o207);
+        spellGVM.glyph = mainGVM.glyph;
+        spellGVM.address = mainGVM.address;
+        
+        drawGlyph(geometronGlyphCanvas, mainGVM);
+        spellGlyph(geometronSpellCanvas, spellGVM);
+
+    }
+
+
+  }
+
+  sixtyfoursSelect.addEventListener('change', handleChange);
+  eightsSelect.addEventListener('change', handleChange);
+  onesSelect.addEventListener('change', handleChange);
+  modeSelect.addEventListener('change', handleChange); 
+});
+
+
+document.getElementById("maineditor").onkeyup = function(){
+    data = editor.getSession().getValue();
+    array = [];
+    for(let index = 0;index < data.length;index++){
+        action = data.charCodeAt(index);
+        symbol = action + 512;
+        array.push(symbol);
+    }
+    hypercube[address] = array;
+    save_file("hypercube.json",JSON.stringify(hypercube));
+    
+}
+
+
+codesquaresize = 512; 
+marginsize = 40; 
+fontsize = 12; 
+globalurl = window.location.href.split("qrcode.html")[0]; 
+
+document.getElementById("urlinput").value = ""; 
+document.getElementById("urlinput").select(); 
+
+document.getElementById("urlinput").onchange = function(){ 
+    globalurl = this.value; 
+    qrcode.makeCode(globalurl); 
+    document.getElementById("linklink").href = globalurl; 
+    document.getElementById("linklink").innerHTML = globalurl; 
+} 
+
+document.getElementById("linklink").href = globalurl; 
+document.getElementById("linklink").innerHTML = globalurl; 
+document.getElementById("urlinput").value = globalurl; 
+
+var qrContainer = document.getElementById("qrcode");
+qrcode = new QRCode(qrContainer, { 
+    text: globalurl, 
+    width: codesquaresize, 
+    height: codesquaresize, 
+    colorDark : "#000000", 
+    colorLight : "#ffffff", 
+    correctLevel : QRCode.CorrectLevel.H 
+}); 
+
+document.getElementById("width-input").value = codesquaresize.toString(); 
+
+document.getElementById("width-input").onchange = function(){ 
+    codesquaresize = parseInt(this.value); 
+    qrcode._htOption.width = codesquaresize; 
+    qrcode._htOption.height = codesquaresize; 
+    qrContainer.innerHTML = ""; 
+    qrcode = new QRCode(qrContainer, { 
+        text: globalurl, 
+        width: codesquaresize, 
+        height: codesquaresize, 
+        colorDark : "#000000", 
+        colorLight : "#ffffff", 
+        correctLevel : QRCode.CorrectLevel.H 
+    });
+}
+
+
+function keyPressed() {
+    if(mode == "geometron" && document.activeElement != document.getElementById("geometron-glyph-input")){
+
+        let actionKey = null;
+        if (key.length === 1) {
+            actionKey = key.charCodeAt(0);
+        } else {
+            // Map special keys to unique integers below 32
+            if (keyCode === BACKSPACE) actionKey = 0o10;  
+            if (keyCode === ENTER)     actionKey = 0o12; 
+            if (keyCode === LEFT_ARROW)  actionKey = 0o20;  
+            if (keyCode === RIGHT_ARROW) actionKey = 0o21;  
+            if (keyCode === UP_ARROW)    actionKey = 0o22;  
+            if (keyCode === DOWN_ARROW)  actionKey = 0o23;
+        }
+        
+        if(actionKey >= 0o40 && actionKey < 0o177){
+            
+            if(mainGVM.keyboard.mode === 0){
+                if(mainGVM.hypercube[actionKey][0] < 0o40){
+                    rootMagic(mainGVM,mainGVM.hypercube[actionKey][0]);
+                } else{
+                    let oldGlyph = mainGVM.glyph;
+                    mainGVM.glyph = [];
+                    for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                        if(oldGlyph[glyphIndex] != 0o207){
+                            mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                        } else{
+                                mainGVM.glyph.push(mainGVM.hypercube[actionKey][0]);
+                                mainGVM.glyph.push(0o207);
+                        }
+                    }
+                }            
+            }
+            if(mainGVM.keyboard.mode === 1){
+                let oldGlyph = mainGVM.glyph;
+                mainGVM.glyph = [];
+                for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                    if(oldGlyph[glyphIndex] != 0o207){
+                        mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                    } else{
+                        mainGVM.glyph.push(actionKey + 0o1000);
+                        mainGVM.glyph.push(0o207);
+                    }
+                }
+            }
+            if(mainGVM.keyboard.mode === 2){
+                let oldGlyph = mainGVM.glyph;
+                mainGVM.glyph = [];
+                for(let glyphIndex = 0;glyphIndex < oldGlyph.length;glyphIndex++){
+                    if(oldGlyph[glyphIndex] != 0o207){
+                        mainGVM.glyph.push(oldGlyph[glyphIndex]);
+                    } else{
+                        mainGVM.glyph.push(actionKey);
+                        mainGVM.glyph.push(0o207);
+                    }
+                }
+            }
+        }
+        if (actionKey === 0o10) {
+            //delete character before the cursor
+            rootMagic(mainGVM,0o10);
+        }
+        if (actionKey === 0o12) {
+            rootMagic(mainGVM,0o12);
+    
+            //ENTER key
+            //mode switch from shape to font to word        
+        }
+        if (actionKey === 0o20) {
+            //0o20 left arrow, cursor back
+            rootMagic(mainGVM,0o20);
+        }
+        if (actionKey === 0o21) {
+            //right arrow, cursor forward
+            rootMagic(mainGVM,0o21);
+        }
+        if (actionKey === 0o22) {
+            //up arrow, move up in hypercube
+            rootMagic(mainGVM,0o22);
+            mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+            mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+            mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+
+            
+        }
+        if (actionKey === 0o23) {
+            //down arrow,move down in hypercube
+            rootMagic(mainGVM,0o23);
+            mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
+            mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
+            mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
+
+        }
+        
+
+        mainGVM.glyph = mainGVM.glyph.filter(item => item !== null);
+
+        spellGVM.glyph = mainGVM.glyph; 
+        
+        drawGlyph(geometronGlyphCanvas, mainGVM);
+        spellGlyph(geometronSpellCanvas, spellGVM);
+        
+//        saveHypercube(mainGVM);
+        mainGVM.hypercube[mainGVM.address] = mainGVM.glyph.filter(cursorCode => cursorCode !== 0o207);
+        
+        hypercube[mainGVM.address] =  mainGVM.hypercube[mainGVM.address];
+        save_file("hypercube.json",JSON.stringify(hypercube));
+        
+        
+        let glyphString = "";
+        for(let index = 0;index < mainGVM.glyph.length;index++){
+            if(mainGVM.glyph[index] != 0o207 && mainGVM.glyph[index] != null){
+                glyphString += "0" + mainGVM.glyph[index].toString(8) + ",";
+            }
+        }
+        document.getElementById("geometron-glyph-input").value = glyphString;
+    }
+}
+
+
+
+</script>
+<style>
+body{
+      background-color: #9f8767;
+       font-family: Comic Sans MS; 
+}
+textarea{
+      background-color: #9f8767;
+        font-family: Comic Sans MS;
+}
+#geometron-glyph-canvas{
+
+    border:solid;
+    display:none;
+    position:absolute;
+    right:10px;
+    bottom:10px;
+
+    
+}
+#geometron-spell-canvas{
+
+    border:solid;
+    display:none;
+    position:absolute;
+    left:10px;
+    bottom:10px;
+}
+
+select {
+  font-size: 1.2em;
+  margin: 10px 0 0 40px;
+}
+
+#mission {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+}
+#feed {
+  position: fixed;
+  overflow:scroll;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+}
+
+#wall {
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+  display:none;
+}
+a{
+    color:blue;
+}
+
+
+#icon canvas{
+    border:solid;
+}
+#icon{
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+
+}
+.button{
+    border:solid;
+    cursor:pointer;
+    text-align:center;
+    width:8em;
+}
+.button:hover{
+    background-color:#808080;
+}
+.button:active{
+    background-color:green;
+}
+#keyboard input{
+    width:3em;
+}
+#maineditor{
+  position: fixed;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 2em;
+  z-indeX:2;
+  display:none;
+}
+#qrcode{
+}
+#mode{
+    
+}
+#addresstable{
+    display:none;
+}
+
+#feed-post{
+    background-color:black;
+    color:#00ff00;
+    font-family:Courier;
+    font-size:3em;
+}
+#clear-feed:hover{
+    background-color:#400000;
+}
+#clear-feed{
+    font-size:3em;
+    color:red;
+    background-color:black;
+    width:6em;
+    border:solid;
+    border-radius:0.5em;
+    cursor:pointer;
+    border-color:red;
+    text-align:center;
+}
+.sign{
+  background-color: #9f8767;
+  font-size:2em;
+  font-family:Comic Sans MS;
+  border:solid;
+  padding:1em 1em 1em 1em;
+  margin:1em 1em 1em 1em;
+  border-radius:0.5em;
+}
+.delete-button{
+    color:red;
+    border:solid;
+    border-color:red;
+    background-color:black;
+    font-family:Arial;
+    padding:0.25em 0.25em 0.25em 0.25em;
+    border-radius:0.25em;
+    cursor:pointer;
+}
+.delete-button:hover{
+    background-color:#400000;
+}
+</style>
+</body>
+</html>

@@ -21,47 +21,7 @@
       <option value="qrcode">qrcode</option>
       <option value="geometron">geometron</option>
 </select>
-<table id = "addresstable">
-    <tr>
-        <td>0</td>
-        <td>
-            <select name="sixtyfours">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-            </select>
-        </td>
-        <td>
-            <select name="eights">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-            </select>
-        </td>
-        <td>
-            <select name="ones">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-            </select>
-        </td>
-    </tr>
-</table> 
+
 
 <div id ="qrcode-box">
     <table>
@@ -86,16 +46,8 @@
 <div id = "feed"></div>
 <canvas id = "geometron-glyph-canvas"></canvas>
 <canvas id = "geometron-spell-canvas"></canvas>
-<table>
-    <tr>
-        <td>
-            <input id = "geometron-address">:
-        </td>
-        <td>
-            <input id = "geometron-glyph-input">
-        </td>
-    </tr>
-</table>
+<input id = "address">
+<input id = "geometron-glyph-input">
 <div id="icon"></div>
 <div class= "button" id ="delete-stroke">DELETE</div>
 <div class= "button" id ="clear-icon">CLEAR</div>
@@ -109,7 +61,7 @@ brushstroke = [];
 thispoint = {};
 thispoint.x = 0;
 thispoint.y = 0;
-address = 07;//mission
+address = 0o10;
 
 function invisible(){
     document.getElementById("mission").style.display = "none";
@@ -118,7 +70,6 @@ function invisible(){
     document.getElementById("clear-feed").style.display = "none";
     document.getElementById("feed-post").style.display = "none";
 
-    document.getElementById("addresstable").style.display = "none";
 
     document.getElementById("keyboard").style.display = "none";
     
@@ -130,7 +81,8 @@ function invisible(){
 
     document.getElementById("delete-stroke").style.display = "none";    
     document.getElementById("clear-icon").style.display = "none";    
-    document.getElementById("geometron-glyph-input").style.display = "none"; 
+    document.getElementById("geometron-glyph-input").style.display = "none";
+    document.getElementById("address").style.display = "none";
     
     
 }
@@ -334,8 +286,8 @@ function draw() {
                   brushstroke = [];
               }
               inLine = false;
-          }
-      }
+        }
+    }
 }
 
 document.getElementById("clear-icon").onclick = function(){
@@ -387,8 +339,8 @@ load_file("hypercube.json").then(
         mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
         mainGVM.style.line0 = 3;
         mainGVM.hypercube = hypercube;
-        
         mainGVM.glyph = hypercube[mainGVM.address];
+
         spellGVM.glyph = mainGVM.glyph;
         spellGVM.canvas.width = geometronSquare;
         spellGVM.canvas.height = geometronSquare;
@@ -400,7 +352,6 @@ load_file("hypercube.json").then(
    
         drawGlyph(document.getElementById("geometron-glyph-canvas"), mainGVM);
 
-        
         spellGVM.style.line0 = 1;
         spellGVM.canvas.unit = 40;
         spellGlyph(document.getElementById("geometron-spell-canvas"), spellGVM);
@@ -410,22 +361,11 @@ load_file("hypercube.json").then(
 
 
 window.addEventListener('DOMContentLoaded', () => {
-  const sixtyfoursSelect = document.querySelector('select[name="sixtyfours"]');
-  const eightsSelect = document.querySelector('select[name="eights"]');
-  const onesSelect = document.querySelector('select[name="ones"]');
 
   const modeSelect = document.querySelector('select[name="mode"]');
-
-  sixtyfoursSelect.value = "0";
-  eightsSelect.value = "1";
-  onesSelect.value = "0";
   modeSelect.value = "mission";
-
   function handleChange() {
-    sixtyfours = parseInt(sixtyfoursSelect.value);
-    eights = parseInt(eightsSelect.value);
-    ones = parseInt(onesSelect.value);
-    address =  64 * sixtyfours + (8 * eights) + ones;
+
     mode = modeSelect.value;
     if(mode == "wall"){
         invisible();
@@ -450,10 +390,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }
     if(mode == "javascript"){
         invisible();
+        document.getElementById("address").style.display = "block"; 
+        document.getElementById("maineditor").style.display = "block";
+
         if((address >= 0o10 && address <= 0o176) || (address >= 0o300 && address <= 0o377)){
+            
+            document.getElementById("address").value = "0" + address.toString(8);
             javascriptArray = hypercube[address];
-            document.getElementById("maineditor").style.display = "block";
-            document.getElementById("addresstable").style.display = "block";
             code = "";
             for(let index = 0;index < javascriptArray.length; index++){
                 code += String.fromCharCode(javascriptArray[index] - 512);
@@ -462,17 +405,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
         else{
             address = 0o10;
-            sixtyfours = Math.floor(address / 64) % 8;
-            eights     = Math.floor(address / 8) % 8;
-            ones       = address % 8;
-            
-            sixtyfoursSelect.value = sixtyfours.toString();
-            eightsSelect.value = eights.toString();
-            onesSelect.value = ones.toString();
-    
             javascriptArray = hypercube[address];
-            document.getElementById("maineditor").style.display = "block";
-            document.getElementById("addresstable").style.display = "block";
             code = "";
             for(let index = 0;index < javascriptArray.length; index++){
                 code += String.fromCharCode(javascriptArray[index] - 512);
@@ -500,24 +433,16 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById("geometron-glyph-canvas").style.display = "block";
         document.getElementById("geometron-spell-canvas").style.display = "block";    
         document.getElementById("geometron-glyph-input").style.display = "block"; 
+        document.getElementById("address").style.display = "block"; 
 
-        document.getElementById("addresstable").style.display = "block"; 
-        
         for(let index = 0o277;index >= 0o220; index--){
             if(mainGVM.hypercube[index].length > 0){
                 mainGVM.address = index;
-                address = index;
                 break;
             }
         }
-        sixtyfours = Math.floor(address / 64) % 8;
-        eights     = Math.floor(address / 8) % 8;
-        ones       = address % 8;
-        
-        sixtyfoursSelect.value = sixtyfours.toString();
-        eightsSelect.value = eights.toString();
-        onesSelect.value = ones.toString();
-        mainGVM.glyph = hypercube[address];
+        document.getElementById("address").value = "0" + mainGVM.address.toString(8);
+        mainGVM.glyph = hypercube[mainGVM.address];
         mainGVM.glyph.push(0o207);
         spellGVM.glyph = mainGVM.glyph;
         spellGVM.address = mainGVM.address;
@@ -530,9 +455,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
   }
 
-  sixtyfoursSelect.addEventListener('change', handleChange);
-  eightsSelect.addEventListener('change', handleChange);
-  onesSelect.addEventListener('change', handleChange);
   modeSelect.addEventListener('change', handleChange); 
 });
 
@@ -681,7 +603,7 @@ function keyPressed() {
             mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
             mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
             mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
-
+            document.getElementById("address").value = "0" + mainGVM.address.toString(8);
             
         }
         if (actionKey === 0o23) {
@@ -690,7 +612,7 @@ function keyPressed() {
             mainGVM.canvas.x0 = 0.5 * mainGVM.canvas.width; 
             mainGVM.canvas.y0 = 0.5 * mainGVM.canvas.height;
             mainGVM.canvas.unit = 0.3 * mainGVM.canvas.width; 
-
+            document.getElementById("address").value = "0" + mainGVM.address.toString(8);
         }
         
 
@@ -701,7 +623,6 @@ function keyPressed() {
         drawGlyph(geometronGlyphCanvas, mainGVM);
         spellGlyph(geometronSpellCanvas, spellGVM);
         
-//        saveHypercube(mainGVM);
         mainGVM.hypercube[mainGVM.address] = mainGVM.glyph.filter(cursorCode => cursorCode !== 0o207);
         
         hypercube[mainGVM.address] =  mainGVM.hypercube[mainGVM.address];
@@ -842,9 +763,6 @@ a{
 }
 #mode{
     
-}
-#addresstable{
-    display:none;
 }
 
 #feed-post{
