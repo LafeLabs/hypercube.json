@@ -459,6 +459,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 
+
 document.getElementById("maineditor").onkeyup = function(){
     data = editor.getSession().getValue();
     array = [];
@@ -521,7 +522,7 @@ document.getElementById("width-input").onchange = function(){
 
 
 function keyPressed() {
-    if(mode == "geometron" && document.activeElement != document.getElementById("geometron-glyph-input")){
+    if(mode == "geometron" && document.activeElement != document.getElementById("geometron-glyph-input") && document.activeElement != document.getElementById("address")){
 
         let actionKey = null;
         if (key.length === 1) {
@@ -541,6 +542,9 @@ function keyPressed() {
             if(mainGVM.keyboard.mode === 0){
                 if(mainGVM.hypercube[actionKey][0] < 0o40){
                     rootMagic(mainGVM,mainGVM.hypercube[actionKey][0]);
+                    if(actionKey == 0o40){
+                        document.getElementById("address").value = "0" + mainGVM.address.toString(8);
+                    }
                 } else{
                     let oldGlyph = mainGVM.glyph;
                     mainGVM.glyph = [];
@@ -639,6 +643,55 @@ function keyPressed() {
     }
 }
 
+
+document.getElementById("address").onchange = function(){
+    this.blur();
+    let localaddress = parseInt(this.value,8);
+    if(!Number.isNaN(localaddress) && mode == "geometron"){
+       if((localaddress >= 0o1000 && localaddress <= 0o1777) || (localaddress >= 0o200 && localaddress <= 0o277)){
+           mainGVM.address = localaddress;
+           spellGVM.address = localaddress;
+           mainGVM.glyph = hypercube[mainGVM.address];
+           mainGVM.glyph.push(0o207);
+           spellGVM.glyph = mainGVM.glyph;
+           drawGlyph(geometronGlyphCanvas, mainGVM);
+           spellGlyph(geometronSpellCanvas, spellGVM);
+
+       }
+    }
+    if(!Number.isNaN(localaddress) && mode == "javascript"){
+        if((localaddress >= 0o10 && localaddress <= 0o37) || (localaddress >= 0o300 && localaddress <= 0o377)){
+           address = localaddress;
+           javascriptArray = hypercube[address];
+            code = "";
+            for(let index = 0;index < javascriptArray.length; index++){
+                code += String.fromCharCode(javascriptArray[index] - 512);
+            }
+            editor.setValue(code);
+
+       }
+    }
+
+}
+
+document.getElementById("geometron-glyph-input").onchange = function(){
+    let glyphInput = this.value;
+    let glyphArray = glyphInput.split(",");
+    let inputGlyph = [];
+    for(let index = 0;index < glyphArray.length;index++){
+        let thisInt = parseInt(glyphArray[index],8);
+        if(!Number.isNaN(thisInt)){
+            inputGlyph.push(thisInt);
+        }
+    }
+    mainGVM.glyph = inputGlyph;
+    hypercube[mainGVM.address] = inputGlyph;
+    mainGVM.glyph.push(0o207);
+    spellGVM.glyph = mainGVM.glyph;
+    drawGlyph(geometronGlyphCanvas, mainGVM);
+    spellGlyph(geometronSpellCanvas, spellGVM);
+    save_file("hypercube.json",JSON.stringify(hypercube));
+}
 
 
 </script>
