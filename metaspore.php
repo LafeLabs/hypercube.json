@@ -18,6 +18,10 @@ $files = [
     "save-file.php",
     "list-files.php",
     "fetch-spore.php",
+    "delete-file.php",
+    "delete-fork.php",
+    "create-fork.php",
+    "list-forks.php",
     "geometron.js",
     "editor.html",
     "index.html",
@@ -72,7 +76,7 @@ foreach ($json as $file) {
 
 file_put_contents("wall.txt","THIS IS THE WALL!");
 file_put_contents("icon.json","[]");
-file_put_contents("feed.json","[]");
+file_put_contents("feed.json","[\"editor.html\"]");
 file_put_contents("README.md","#hypercube\n\n");
 
 file_put_contents("hypercube.json", json_encode($hypercube));
