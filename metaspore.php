@@ -22,6 +22,8 @@ $files = [
     "delete-fork.php",
     "create-fork.php",
     "list-forks.php",
+    "upload-image.php",
+    "save-png.php",
     "geometron.js",
     "editor.html",
     "index.html",

@@ -1,9 +1,7 @@
  <!doctype html>
 <html>
 <head>
-
     <link href="data:image/x-icon;base64,AAABAAEAEBAQAAEABAAoAQAAFgAAACgAAAAQAAAAIAAAAAEABAAAAAAAgAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/3gAA//8AAPb/AAD//wAA//8AAP/7AAD/3wAA3/8AAP7/AAD//wAA//8AAP93AADv/wAA//8AAP//AAB+/gAA" rel="icon" type="image/x-icon">
-    
 <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.43.3/ace.js"></script>
 <script src = "geometron.js"></script>
 <title>geometron hypercube</title>
@@ -20,6 +18,8 @@
       <option value="keyboard">keyboard</option>
       <option value="qrcode">qrcode</option>
       <option value="geometron">geometron</option>
+      <option value="freebox">freebox</option>
+      
 </select>
 
 
@@ -50,6 +50,14 @@
 <input id = "address">
 <input id = "geometron-glyph-input">
 <div id="icon"></div>
+<div id="freebox">
+    <form id = "uploadform" action="upload-image.php" method="post" enctype="multipart/form-data">
+                <span id ="uploadspan">UPLOAD:</span>
+        <input type="file" name="fileToUpload" id="fileToUpload">
+        <input type="submit" value="Upload Image" name="submit" id ="submitinput">
+    </form>        
+    <div id = "imagefeed"></div>
+</div>
 <div class= "button" id ="delete-stroke">DELETE</div>
 <div class= "button" id ="clear-icon">CLEAR</div>
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
@@ -68,6 +76,9 @@ function invisible(){
     document.getElementById("mission").style.display = "none";
     document.getElementById("wall").style.display = "none";
     document.getElementById("feed").style.display = "none";
+
+    document.getElementById("freebox").style.display = "none";
+
     document.getElementById("clear-feed").style.display = "none";
     document.getElementById("feed-post").style.display = "none";
 
@@ -429,6 +440,10 @@ window.addEventListener('DOMContentLoaded', () => {
     else{
         document.body.style.backgroundColor = "#9f8767";
     }
+    if(mode =="freebox"){
+        invisible();
+        document.getElementById("freebox").style.display = "block";        
+    }
     if(mode == "geometron"){
         
         invisible();
@@ -708,6 +723,63 @@ document.getElementById("geometron-glyph-input").onchange = function(){
 }
 
 
+deletemode = true;
+//deletemode = false;
+
+uploadImages = [];
+
+var httpcUpload = new XMLHttpRequest();
+httpcUpload.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+        uploadImages = JSON.parse(this.responseText);
+        loadimagefeed();
+    }
+};
+httpcUpload.open("GET", "list-files.php", true);
+httpcUpload.send();
+
+function loadimagefeed(){
+
+    for(var index = uploadImages.length - 1;index >= 0;index--) {
+        if(uploadImages[index].includes(".SVG") || uploadImages[index].includes(".svg") || uploadImages[index].includes(".png") || uploadImages[index].includes(".PNG") || uploadImages[index].includes(".jpg") || uploadImages[index].includes(".JPG") ||uploadImages[index].includes(".jpeg") || uploadImages[index].includes(".gif") ||uploadImages[index].includes(".GIF")){
+            
+            var newuploadbox = document.createElement("DIV");
+            newuploadbox.classList.add("imagebox");
+            var newimg = document.createElement("IMG");
+            newimg.src = uploadImages[index];
+            newimg.classList.add("uploadimage");
+            newuploadbox.appendChild(newimg);
+            document.getElementById("imagefeed").appendChild(newuploadbox);
+    
+            var newdiv = document.createElement("DIV");
+            newdiv.innerHTML = uploadImages[index];
+            newdiv.className = "filelabel";
+            newuploadbox.appendChild(newdiv);
+        
+            if(deletemode){
+                var newspan = document.createElement("SPAN");
+                newspan.innerHTML = "DELETE";
+                newuploadbox.appendChild(newspan);
+                newspan.classList.add("button");
+                newspan.classList.add("deletebutton");
+                newspan.onclick = function(){
+                    var imageurl =this.parentElement.getElementsByClassName("uploadimage")[0].src; 
+                    imagefilename = imageurl.split("/")[imageurl.split("/").length-1];
+                    var httpc = new XMLHttpRequest();
+                    var url = "delete-file.php";         
+                    httpc.open("POST", url, true);
+                    httpc.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+                    httpc.send("filename=" + imagefilename);//send text to deletefile.php
+                    this.parentElement.parentElement.removeChild(this.parentElement);
+                }   
+            }   
+            
+            
+        }
+    }    
+}
+
+
 </script>
 <style>
 body{
@@ -761,6 +833,19 @@ select {
   font-size: 3em;
 }
 #feed {
+  position: fixed;
+  overflow:scroll;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  top: 120px;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  font-size: 3em;
+}
+
+#freebox {
   position: fixed;
   overflow:scroll;
   bottom: 40px;

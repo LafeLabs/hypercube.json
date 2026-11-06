@@ -1,11 +1,4 @@
-<p style = "font-size:5em">
-    <a href = "freebox.html">freebox</a>
-</p>
-
-<p style = "font-size:5em">
-    <a href = "index.html">HOME</a>
-</p>
-
+<a href = "index.html">HOME</a>
 <?php
 
 $files = scandir(getcwd());
