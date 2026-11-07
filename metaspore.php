@@ -27,7 +27,7 @@ $files = [
     "geometron.js",
     "editor.html",
     "index.html",
-    "mission.txt"
+    "manifesto.txt"
 ];
 
 $zeroJson = [];

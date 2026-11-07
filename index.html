@@ -10,16 +10,15 @@
     </head>
 <body>
 <select  onchange="this.blur()" name="mode">
-      <option value="mission">mission</option>
-      <option value="wall">wall</option>
-      <option value="icon">icon</option>
-      <option value="feed">feed</option>
-      <option value="javascript">javascript</option>
-      <option value="keyboard">keyboard</option>
-      <option value="qrcode">qrcode</option>
-      <option value="geometron">geometron</option>
-      <option value="freebox">freebox</option>
-      
+  <option value="manifesto">manifesto</option>
+  <option value="wall">wall</option>
+  <option value="icon">icon</option>
+  <option value="feed">feed</option>
+  <option value="javascript">javascript</option>
+  <option value="keyboard">keyboard</option>
+  <option value="qrcode">qrcode</option>
+  <option value="geometron">geometron</option>
+  <option value="freebox">freebox</option>
 </select>
 
 
@@ -40,7 +39,7 @@
     <a id = "linklink"></a>
     <div id = "qrcode"></div>
 </div>
-<textarea id = "mission"></textarea>
+<textarea id = "manifesto"></textarea>
 <textarea id = "wall"></textarea>
 <input id = "feed-post"><div class = "button" id = "clear-feed">CLEAR</div>
 <div id = "feed"></div>
@@ -63,7 +62,7 @@
 <div id="maineditor" contenteditable="true" spellcheck="false"></div>
 <table id = "keyboard"></table>
 <script>
-mode = "mission";
+mode = "manifesto";
 icon = [];
 inLine = false;
 brushstroke = [];
@@ -73,7 +72,7 @@ thispoint.y = 0;
 address = 0o10;
 
 function invisible(){
-    document.getElementById("mission").style.display = "none";
+    document.getElementById("manifesto").style.display = "none";
     document.getElementById("wall").style.display = "none";
     document.getElementById("feed").style.display = "none";
 
@@ -100,7 +99,7 @@ function invisible(){
     
 }
 invisible();
-document.getElementById("mission").style.display = "block";
+document.getElementById("manifesto").style.display = "block";
 
 editor = ace.edit("maineditor");
 editor.setTheme("ace/theme/github");
@@ -149,9 +148,9 @@ function buildKeyboard(){
     }
 }
 
-load_file("mission.txt").then(
+load_file("manifesto.txt").then(
     filedata => {
-        document.getElementById("mission").value = filedata;
+        document.getElementById("manifesto").value = filedata;
     }
 );
 
@@ -228,11 +227,11 @@ function saveFeed(){
 }
 
 
-document.getElementById("mission").onkeyup = function() {
+document.getElementById("manifesto").onkeyup = function() {
     
-    mission = this.value;
+    manifesto = this.value;
     data = encodeURIComponent(this.value);
-    save_file("mission.txt",data);
+    save_file("manifesto.txt",data);
     
 }
 
@@ -376,7 +375,7 @@ load_file("hypercube.json").then(
 window.addEventListener('DOMContentLoaded', () => {
 
   const modeSelect = document.querySelector('select[name="mode"]');
-  modeSelect.value = "mission";
+  modeSelect.value = "manifesto";
   function handleChange() {
 
     mode = modeSelect.value;
@@ -384,9 +383,9 @@ window.addEventListener('DOMContentLoaded', () => {
         invisible();
         document.getElementById("wall").style.display = "block";
     }
-    if(mode == "mission"){
+    if(mode == "manifesto"){
         invisible();
-        document.getElementById("mission").style.display = "block";
+        document.getElementById("manifesto").style.display = "block";
     }
     if(mode == "icon"){
         invisible();
@@ -821,7 +820,7 @@ select {
   margin: 10px 0 0 40px;
 }
 
-#mission {
+#manifesto {
   position: fixed;
   bottom: 40px;
   left: 40px;
